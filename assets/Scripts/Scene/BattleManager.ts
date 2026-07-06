@@ -98,8 +98,8 @@ export class BattleManager extends Component {
     player.setParent(this.stage)
 
     const playerManager = player.addComponent(PlayerManager)
-
-    playerManager.init()
+    console.log(`this.level.player --->`, this.level.player)
+    playerManager.init(this.level.player)
   }
 
   /**

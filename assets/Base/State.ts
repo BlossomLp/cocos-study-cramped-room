@@ -5,6 +5,7 @@ import { StateMachine } from './StateMachine'
 const ANIMATION_SPEED = 1 / 8
 
 /****
+ * 角色状态
  *  1. 需要知道自己的 animationClip
  *  2. 需要有播放动画的能力 animationComponent.play()
  */

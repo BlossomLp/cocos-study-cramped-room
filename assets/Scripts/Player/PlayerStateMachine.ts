@@ -1,7 +1,8 @@
-import { _decorator, Animation, AnimationClip } from 'cc'
-import State from '../../Base/State'
+import { _decorator, Animation } from 'cc'
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../../Base/StateMachine'
 import { PARAMS_NAME_ENUM } from '../../Enum'
+import IdleSubStateMachine from './IdleSubStateMachine'
+import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 const { ccclass, property } = _decorator
 
 /****
@@ -32,15 +33,11 @@ export class PlayerStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
   }
 
+  /** 注册玩家状态机 */
   initStateMachines() {
-    const self = this
-    const initParams = [
-      { key: PARAMS_NAME_ENUM.IDLE, path: 'texture/player/idle/top', wrapMode: AnimationClip.WrapMode.Loop },
-      { key: PARAMS_NAME_ENUM.TURNLEFT, path: 'texture/player/turnleft/top' },
-    ]
-    initParams.forEach(({ key, path, wrapMode }) => {
-      self.stateMachines.set(key, new State(self, path, wrapMode))
-    })
+    this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
+    this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
+    console.log(`注册完成`, this.stateMachines)
   }
 
   initAnimationEvent() {
@@ -64,6 +61,9 @@ export class PlayerStateMachine extends StateMachine {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT)
         } else if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
+        } else {
+          // 没有匹配到动作也强制触发 run 当前状态
+          this.currentState = this.currentState
         }
         break
       default:

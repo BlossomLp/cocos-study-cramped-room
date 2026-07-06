@@ -34,7 +34,9 @@ export interface ILevel {
   bursts: Array<IEntity>
   door: IEntity
 }
-
+/**
+ * 主体状态
+ */
 export interface IEntity {
   x: number
   y: number

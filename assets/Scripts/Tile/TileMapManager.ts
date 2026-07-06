@@ -8,12 +8,13 @@ const { ccclass, property } = _decorator
 @ccclass('TileMapManager')
 export class TileMapManager extends Component {
   async init() {
-    const { mapInfo } = DataManager.Instance
+    const { tileMapInfo, mapInfo } = DataManager.Instance
 
     // 加载瓦片资源
     const spriteFrames = await ResourceManager.Instance.loadResources('texture/tile/tile')
     // 绘制瓦片资源
     for (let i = 0; i < mapInfo.length; i++) {
+      tileMapInfo[i] = []
       const column = mapInfo[i]
       for (let j = 0; j < column.length; j++) {
         const { src, type } = column[j]
@@ -28,7 +29,8 @@ export class TileMapManager extends Component {
         const imgSrc = `tile (${num})`
         const spriteFrame = spriteFrames.find(v => v.name === imgSrc) || spriteFrames[0]
         const tileManager: TileManager = node.addComponent(TileManager)
-        tileManager.init(spriteFrame, i, j)
+        tileManager.init(type, spriteFrame, i, j)
+        tileMapInfo[i][j] = tileManager
 
         node.setParent(this.node)
       }

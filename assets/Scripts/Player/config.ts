@@ -1,11 +1,13 @@
 import { SubStateMachine } from '../../Base/SubStateMachine'
 import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import AirDeathSubStateMachine from './AirDeathSubStateMachine'
 import BlockBackSubStateMachine from './BlockBackSubStateMachine'
 import BlockFrontSubStateMachine from './BlockFrontSubStateMachine'
 import BlockLeftSubStateMachine from './BlockLeftSubStateMachine'
 import BlockRightSubStateMachine from './BlockRightSubStateMachine'
 import BlockTurnLeftSubStateMachine from './BlockTurnLeftSubStateMachine'
 import BlockTurnRightSubStateMachine from './BlockTurnRightSubStateMachine'
+import DeathSubStateMachine from './DeathSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 import TurnRightSubStateMachine from './TurnRightSubStateMachine'
@@ -25,6 +27,8 @@ export const INIT_FSM_LIST: IIintStateItem[] = [
   { param: PARAMS_NAME_ENUM.BLOCKTURNLEFT, cls: BlockTurnLeftSubStateMachine },
   { param: PARAMS_NAME_ENUM.BLOCKTURNRIGHT, cls: BlockTurnRightSubStateMachine },
   { param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine },
+  { param: PARAMS_NAME_ENUM.DEATH, cls: DeathSubStateMachine },
+  { param: PARAMS_NAME_ENUM.AIRDEATH, cls: AirDeathSubStateMachine },
 ]
 type CtrlMovePositions = Record<CONTROLLER_ENUM, [number, number]>
 /** 操作按钮角色移动 */

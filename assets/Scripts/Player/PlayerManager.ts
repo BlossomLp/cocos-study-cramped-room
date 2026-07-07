@@ -26,10 +26,12 @@ export class PlayerManager extends EntityManager {
 
   onLoad() {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
+    EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
   }
 
   onDestroy() {
     EventManager.Instance.off(EVENT_ENUM.PLAYER_CTRL, this.inputHandle)
+    EventManager.Instance.off(EVENT_ENUM.ATTACK_PLAYER, this.onDead)
   }
 
   async init(params: IEntity) {
@@ -81,6 +83,8 @@ export class PlayerManager extends EntityManager {
   }
 
   inputHandle(inputDirection: CONTROLLER_ENUM) {
+    if (this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH) return
+    if (this.isMoving) return
     // 撞墙
     if (this.willBlock(inputDirection)) return
     this.move(inputDirection)
@@ -195,5 +199,9 @@ export class PlayerManager extends EntityManager {
     // 撞墙状态（动画）
     this.state = BLOCK_DIRECTIONS[direction][inputDirection]
     return true
+  }
+
+  onDead(type: ENTITY_STATE_ENUM) {
+    this.state = type
   }
 }

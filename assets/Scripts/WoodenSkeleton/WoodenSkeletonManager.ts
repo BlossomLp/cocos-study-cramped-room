@@ -70,28 +70,20 @@ export class WoodenSkeletonManager extends EntityManager {
   onAttack() {
     const player = DataManager.Instance.player
     if (!player) return
-    const { x: playerX, y: playerY } = player
+    const { x: playerX, y: playerY, state } = player
+    // 玩家已死
+    const isPlayerDead = state === ENTITY_STATE_ENUM.DEATH || state === ENTITY_STATE_ENUM.AIRDEATH
+    if (isPlayerDead) {
+      this.state = ENTITY_STATE_ENUM.IDLE
+    }
     // 如果玩家在当前对象的上下左右一格内，则进入攻击状态
-    if (playerX === this.x) {
-      if (playerY === this.y - 1) {
-        this.direction = DIRECTION_ENUM.TOP
-        this.state = ENTITY_STATE_ENUM.ATTACK
-      } else if (playerY === this.y + 1) {
-        this.direction = DIRECTION_ENUM.BOTTOM
-        this.state = ENTITY_STATE_ENUM.ATTACK
-      } else {
-        this.state = ENTITY_STATE_ENUM.IDLE
-      }
-    } else if (playerY === this.y) {
-      if (playerX === this.x - 1) {
-        this.direction = DIRECTION_ENUM.LEFT
-        this.state = ENTITY_STATE_ENUM.ATTACK
-      } else if (playerX === this.x + 1) {
-        this.direction = DIRECTION_ENUM.RIGHT
-        this.state = ENTITY_STATE_ENUM.ATTACK
-      } else {
-        this.state = ENTITY_STATE_ENUM.IDLE
-      }
+    else if (
+      (playerX === this.x && (playerY === this.y - 1 || playerY === this.y + 1)) ||
+      (playerY === this.y && (playerX === this.x - 1 || playerX === this.x + 1))
+    ) {
+      this.state = ENTITY_STATE_ENUM.ATTACK
+      // 通知玩家去死，死法：地面死
+      EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
     }

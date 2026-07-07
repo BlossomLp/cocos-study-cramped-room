@@ -176,7 +176,7 @@ export class PlayerManager extends EntityManager {
         tile2 = tileMapInfo[x - 1][y]
       } else if (direction === DIRECTION_ENUM.RIGHT) {
         tile1 = tileMapInfo[x + 1][y + 1]
-        tile2 = tileMapInfo[x][y - 1]
+        tile2 = tileMapInfo[x][y + 1]
       }
       if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable)) {
         return false

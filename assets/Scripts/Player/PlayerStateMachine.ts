@@ -59,9 +59,7 @@ export class PlayerStateMachine extends StateMachine {
 
   run() {
     const next = this.transitons.find(({ check }) => check())
-
     if (next) {
-      console.log(`【状态机】状态切换: `, this.currentState, next)
       this.currentState = this.stateMachines.get(next.state)
     } else {
       this.currentState = this.currentState

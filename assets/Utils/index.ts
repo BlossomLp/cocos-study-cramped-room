@@ -13,3 +13,14 @@ export const createUINode = (name: string = ''): Node => {
 export const randomByRange = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min) + min)
 }
+
+const sortFrameReg: RegExp = /\((\d+)\)/
+const getFrameIndex = (frameName: string): number => {
+  const match = frameName.match(sortFrameReg)
+  if (match) {
+    return parseInt(match[1])
+  }
+  return 0
+}
+/** 帧动画排序 */
+export const sortSpriteFrames = arr => arr.sort((a, b) => getFrameIndex(a.name) - getFrameIndex(b.name))

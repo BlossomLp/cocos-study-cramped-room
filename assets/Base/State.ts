@@ -1,5 +1,6 @@
 import { animation, AnimationClip, Sprite, SpriteFrame } from 'cc'
 import ResourceManager from '../RunTIme/ResourceManager'
+import { sortSpriteFrames } from '../Utils'
 import { StateMachine } from './StateMachine'
 
 const ANIMATION_SPEED = 1 / 8
@@ -34,10 +35,9 @@ export default class State {
 
     track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame')
 
-    const frames: Array<[number, SpriteFrame]> = spriteFrames.map((item: SpriteFrame, index: number) => [
-      ANIMATION_SPEED * index,
-      item,
-    ])
+    const frames: Array<[number, SpriteFrame]> = sortSpriteFrames(spriteFrames).map(
+      (item: SpriteFrame, index: number) => [ANIMATION_SPEED * index, item],
+    )
 
     console.log('spriteFrames', spriteFrames, frames)
     // track.channel.curve.assignSorted([

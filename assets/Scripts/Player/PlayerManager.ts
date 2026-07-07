@@ -1,10 +1,11 @@
 import { _decorator } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { TileManager } from '../Tile/TIleManager'
+import { BLOCK_DIRECTIONS, CTRL_MOVE_POSITIONS, TURN_DIRECTIONS } from './config'
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerManager')
@@ -30,20 +31,9 @@ export class PlayerManager extends EntityManager {
   }
 
   async init(params: IEntity) {
-    // this.targetX = params.x
-    // this.targetY = params.y
-    // super.init(params)
-
-    const player: IEntity = {
-      x: 2,
-      y: 8,
-      direction: DIRECTION_ENUM.TOP,
-      state: ENTITY_STATE_ENUM.IDLE,
-      type: ENTITY_TYPE_ENUM.PLAYER,
-    }
-    this.targetX = player.x
-    this.targetY = player.y
-    super.init(player)
+    this.targetX = params.x
+    this.targetY = params.y
+    super.init(params)
   }
 
   /**
@@ -96,28 +86,19 @@ export class PlayerManager extends EntityManager {
    */
   move(inputDirection: CONTROLLER_ENUM) {
     // 根据输入方向更新目标位置
-    if (inputDirection === CONTROLLER_ENUM.TOP) {
-      this.targetY -= 1 // 向上移动，Y坐标增加
-    } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
-      this.targetY += 1 // 向下移动，Y坐标减少
-    } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
-      this.targetX -= 1 // 向左移动，X坐标减少
-    } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
-      this.targetX += 1 // 向右移动，X坐标增加
-    }
+    const [moveX, moveY] = CTRL_MOVE_POSITIONS[inputDirection]
+    this.targetX += moveX
+    this.targetY += moveY
+
     // 左转处理
-    else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
-      // this.fsm.setParams(PARAMS_NAME_ENUM.TURNLEFT, true)
+    if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
       this.state = ENTITY_STATE_ENUM.TURNLEFT
-      if (this.direction === DIRECTION_ENUM.TOP) {
-        this.direction = DIRECTION_ENUM.LEFT
-      } else if (this.direction === DIRECTION_ENUM.LEFT) {
-        this.direction = DIRECTION_ENUM.BOTTOM
-      } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
-        this.direction = DIRECTION_ENUM.RIGHT
-      } else if (this.direction === DIRECTION_ENUM.RIGHT) {
-        this.direction = DIRECTION_ENUM.TOP
-      }
+      this.direction = TURN_DIRECTIONS[inputDirection][this.direction]
+    }
+    // 右转处理
+    else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+      this.state = ENTITY_STATE_ENUM.TURNRIGHT
+      this.direction = TURN_DIRECTIONS[inputDirection][this.direction]
     }
   }
 
@@ -136,15 +117,9 @@ export class PlayerManager extends EntityManager {
     ) {
       // 要判断人物（moveable）和枪头（null || turnable）的目标位置
       // 根据输入方向 计算 【人物目标位置】
-      if (inputDirection === CONTROLLER_ENUM.TOP) {
-        y -= 1 // 向上移动，Y坐标增加
-      } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
-        y += 1 // 向下移动，Y坐标减少
-      } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
-        x -= 1 // 向左移动，X坐标减少
-      } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
-        x += 1 // 向右移动，X坐标增加
-      }
+      const [moveX, moveY] = CTRL_MOVE_POSITIONS[inputDirection]
+      x += moveX
+      y += moveY
       // 判断人物是否走到 【地图边界】
       if (x < 0 || y < 0 || x >= tileMapInfo.length || y >= tileMapInfo[0].length) return false
       let weaponX = x
@@ -162,10 +137,8 @@ export class PlayerManager extends EntityManager {
       const playerTile = tileMapInfo[x][y]
       const weaponTile = tileMapInfo[weaponX][weaponY]
       if (playerTile?.moveable && (!weaponTile || weaponTile.turnable)) return false
-
-      return true
     }
-    // ----- 转向 -----
+    // ----- 转向（左转） -----
     else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
       // 转向要判断枪头到目标位置的途经位置2个(没有瓦片 || 瓦片可转向)
       let tile1: TileManager | null
@@ -183,13 +156,34 @@ export class PlayerManager extends EntityManager {
         tile1 = tileMapInfo[x + 1][y - 1]
         tile2 = tileMapInfo[x][y - 1]
       }
-      console.log('tile1', tile1, tile1?.turnable)
-      console.log('tile2', tile2, tile2?.turnable)
       if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable)) {
         return false
       }
-
-      return true
     }
+    // ----- 转向（右转） -----
+    else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+      // 转向要判断枪头到目标位置的途经位置2个(没有瓦片 || 瓦片可转向)
+      let tile1: TileManager | null
+      let tile2: TileManager | null
+      if (direction === DIRECTION_ENUM.TOP) {
+        tile1 = tileMapInfo[x + 1][y - 1]
+        tile2 = tileMapInfo[x + 1][y]
+      } else if (direction === DIRECTION_ENUM.LEFT) {
+        tile1 = tileMapInfo[x - 1][y - 1]
+        tile2 = tileMapInfo[x][y + 1]
+      } else if (direction === DIRECTION_ENUM.BOTTOM) {
+        tile1 = tileMapInfo[x - 1][y + 1]
+        tile2 = tileMapInfo[x - 1][y]
+      } else if (direction === DIRECTION_ENUM.RIGHT) {
+        tile1 = tileMapInfo[x + 1][y + 1]
+        tile2 = tileMapInfo[x][y - 1]
+      }
+      if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable)) {
+        return false
+      }
+    }
+    // 撞墙状态（动画）
+    this.state = BLOCK_DIRECTIONS[direction][inputDirection]
+    return true
   }
 }

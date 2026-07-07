@@ -1,12 +1,105 @@
-import { DIRECTION_ENUM } from '../../Enum'
+import { SubStateMachine } from '../../Base/SubStateMachine'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import BlockBackSubStateMachine from './BlockBackSubStateMachine'
+import BlockFrontSubStateMachine from './BlockFrontSubStateMachine'
+import BlockLeftSubStateMachine from './BlockLeftSubStateMachine'
+import BlockRightSubStateMachine from './BlockRightSubStateMachine'
+import BlockTurnLeftSubStateMachine from './BlockTurnLeftSubStateMachine'
+import BlockTurnRightSubStateMachine from './BlockTurnRightSubStateMachine'
+import IdleSubStateMachine from './IdleSubStateMachine'
+import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
+import TurnRightSubStateMachine from './TurnRightSubStateMachine'
 
 export interface IDirectionsConf {
   path: string
   direction: DIRECTION_ENUM
 }
+/** 方向资源路径映射 */
 export const DIRECTIONS_LIST: IDirectionsConf[] = [
   { path: 'top', direction: DIRECTION_ENUM.TOP },
   { path: 'bottom', direction: DIRECTION_ENUM.BOTTOM },
   { path: 'left', direction: DIRECTION_ENUM.LEFT },
   { path: 'right', direction: DIRECTION_ENUM.RIGHT },
 ]
+
+export interface IIintStateItem {
+  param: PARAMS_NAME_ENUM
+  cls: new (...args: any[]) => SubStateMachine
+}
+/** 注册/初始化状态机参数 */
+export const INIT_FSM_LIST: IIintStateItem[] = [
+  { param: PARAMS_NAME_ENUM.TURNLEFT, cls: TurnLeftSubStateMachine },
+  { param: PARAMS_NAME_ENUM.TURNRIGHT, cls: TurnRightSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKFRONT, cls: BlockFrontSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKBACK, cls: BlockBackSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKLEFT, cls: BlockLeftSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKRIGHT, cls: BlockRightSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKTURNLEFT, cls: BlockTurnLeftSubStateMachine },
+  { param: PARAMS_NAME_ENUM.BLOCKTURNRIGHT, cls: BlockTurnRightSubStateMachine },
+  { param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine },
+]
+type CtrlMovePositions = Record<CONTROLLER_ENUM, [number, number]>
+/** 操作按钮角色移动 */
+export const CTRL_MOVE_POSITIONS: CtrlMovePositions = {
+  [CONTROLLER_ENUM.TOP]: [0, -1],
+  [CONTROLLER_ENUM.BOTTOM]: [0, 1],
+  [CONTROLLER_ENUM.LEFT]: [-1, 0],
+  [CONTROLLER_ENUM.RIGHT]: [1, 0],
+  [CONTROLLER_ENUM.TURNLEFT]: [0, 0],
+  [CONTROLLER_ENUM.TURNRIGHT]: [0, 0],
+}
+
+type TurnDirection = Record<DIRECTION_ENUM, DIRECTION_ENUM>
+type TurnDirections = Record<CONTROLLER_ENUM.TURNLEFT | CONTROLLER_ENUM.TURNRIGHT, TurnDirection>
+/** 转向配置 */
+export const TURN_DIRECTIONS: TurnDirections = {
+  [CONTROLLER_ENUM.TURNLEFT]: {
+    [DIRECTION_ENUM.TOP]: DIRECTION_ENUM.LEFT,
+    [DIRECTION_ENUM.LEFT]: DIRECTION_ENUM.BOTTOM,
+    [DIRECTION_ENUM.BOTTOM]: DIRECTION_ENUM.RIGHT,
+    [DIRECTION_ENUM.RIGHT]: DIRECTION_ENUM.TOP,
+  },
+  [CONTROLLER_ENUM.TURNRIGHT]: {
+    [DIRECTION_ENUM.TOP]: DIRECTION_ENUM.RIGHT,
+    [DIRECTION_ENUM.RIGHT]: DIRECTION_ENUM.BOTTOM,
+    [DIRECTION_ENUM.BOTTOM]: DIRECTION_ENUM.LEFT,
+    [DIRECTION_ENUM.LEFT]: DIRECTION_ENUM.TOP,
+  },
+}
+
+type MoveBlockDirections = Record<DIRECTION_ENUM, Record<CONTROLLER_ENUM, ENTITY_STATE_ENUM>>
+/** 碰撞检测方向state */
+export const BLOCK_DIRECTIONS: MoveBlockDirections = {
+  [DIRECTION_ENUM.TOP]: {
+    [CONTROLLER_ENUM.TOP]: ENTITY_STATE_ENUM.BLOCKFRONT,
+    [CONTROLLER_ENUM.BOTTOM]: ENTITY_STATE_ENUM.BLOCKBACK,
+    [CONTROLLER_ENUM.LEFT]: ENTITY_STATE_ENUM.BLOCKLEFT,
+    [CONTROLLER_ENUM.RIGHT]: ENTITY_STATE_ENUM.BLOCKRIGHT,
+    [CONTROLLER_ENUM.TURNLEFT]: ENTITY_STATE_ENUM.BLOCKTURNLEFT,
+    [CONTROLLER_ENUM.TURNRIGHT]: ENTITY_STATE_ENUM.BLOCKTURNRIGHT,
+  },
+  [DIRECTION_ENUM.BOTTOM]: {
+    [CONTROLLER_ENUM.TOP]: ENTITY_STATE_ENUM.BLOCKBACK,
+    [CONTROLLER_ENUM.BOTTOM]: ENTITY_STATE_ENUM.BLOCKFRONT,
+    [CONTROLLER_ENUM.LEFT]: ENTITY_STATE_ENUM.BLOCKLEFT,
+    [CONTROLLER_ENUM.RIGHT]: ENTITY_STATE_ENUM.BLOCKRIGHT,
+    [CONTROLLER_ENUM.TURNLEFT]: ENTITY_STATE_ENUM.BLOCKTURNLEFT,
+    [CONTROLLER_ENUM.TURNRIGHT]: ENTITY_STATE_ENUM.BLOCKTURNRIGHT,
+  },
+  [DIRECTION_ENUM.LEFT]: {
+    [CONTROLLER_ENUM.TOP]: ENTITY_STATE_ENUM.BLOCKRIGHT,
+    [CONTROLLER_ENUM.BOTTOM]: ENTITY_STATE_ENUM.BLOCKLEFT,
+    [CONTROLLER_ENUM.LEFT]: ENTITY_STATE_ENUM.BLOCKFRONT,
+    [CONTROLLER_ENUM.RIGHT]: ENTITY_STATE_ENUM.BLOCKBACK,
+    [CONTROLLER_ENUM.TURNLEFT]: ENTITY_STATE_ENUM.BLOCKTURNLEFT,
+    [CONTROLLER_ENUM.TURNRIGHT]: ENTITY_STATE_ENUM.BLOCKTURNRIGHT,
+  },
+  [DIRECTION_ENUM.RIGHT]: {
+    [CONTROLLER_ENUM.TOP]: ENTITY_STATE_ENUM.BLOCKLEFT,
+    [CONTROLLER_ENUM.BOTTOM]: ENTITY_STATE_ENUM.BLOCKRIGHT,
+    [CONTROLLER_ENUM.LEFT]: ENTITY_STATE_ENUM.BLOCKBACK,
+    [CONTROLLER_ENUM.RIGHT]: ENTITY_STATE_ENUM.BLOCKFRONT,
+    [CONTROLLER_ENUM.TURNLEFT]: ENTITY_STATE_ENUM.BLOCKTURNLEFT,
+    [CONTROLLER_ENUM.TURNRIGHT]: ENTITY_STATE_ENUM.BLOCKTURNRIGHT,
+  },
+}

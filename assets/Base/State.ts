@@ -57,6 +57,7 @@ export default class State {
   }
 
   run() {
+    console.log('run', this.path)
     this.fsm.animationComponent.defaultClip = this.animationClip
     this.fsm.animationComponent.play()
   }

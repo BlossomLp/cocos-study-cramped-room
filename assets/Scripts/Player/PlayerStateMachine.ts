@@ -1,8 +1,8 @@
 import { _decorator, Animation } from 'cc'
+import { EntityManager } from '../../Base/EntityManager'
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../../Base/StateMachine'
-import { PARAMS_NAME_ENUM } from '../../Enum'
-import IdleSubStateMachine from './IdleSubStateMachine'
-import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
+import { ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import { INIT_FSM_LIST } from './config'
 const { ccclass, property } = _decorator
 
 /****
@@ -10,6 +10,10 @@ const { ccclass, property } = _decorator
  */
 @ccclass('PlayerStateMachine')
 export class PlayerStateMachine extends StateMachine {
+  private readonly transitons = INIT_FSM_LIST.map(({ param }) => ({
+    state: param,
+    check: () => this.params.get(param).value,
+  }))
   async init() {
     this.animationComponent = this.addComponent(Animation)
 
@@ -25,9 +29,8 @@ export class PlayerStateMachine extends StateMachine {
    */
   initParams() {
     // 状态
-    const initParams = [PARAMS_NAME_ENUM.IDLE, PARAMS_NAME_ENUM.TURNLEFT]
-    initParams.forEach(key => {
-      this.params.set(key, getInitParamsTrigger())
+    INIT_FSM_LIST.forEach(({ param }) => {
+      this.params.set(param, getInitParamsTrigger())
     })
     // 方向
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
@@ -35,39 +38,33 @@ export class PlayerStateMachine extends StateMachine {
 
   /** 注册玩家状态机 */
   initStateMachines() {
-    this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
-    this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
-    console.log(`注册完成`, this.stateMachines)
+    INIT_FSM_LIST.forEach(({ param, cls }) => {
+      this.stateMachines.set(param, new cls(this))
+    })
+    console.log(`【注册玩家状态机】注册完成`, this.stateMachines)
   }
 
   initAnimationEvent() {
     this.animationComponent.on(Animation.EventType.FINISHED, () => {
       const name = this.animationComponent.defaultClip.name
       console.log('Animation.EventType.FINISHED', name)
-
-      const whiteList = ['turn']
+      // 白名单: 这些动作完成后恢复到 idle 状态
+      const whiteList = ['turn', 'block']
       if (whiteList.some(item => name.includes(item))) {
-        this.setParams(PARAMS_NAME_ENUM.IDLE, true)
+        // this.setParams(PARAMS_NAME_ENUM.IDLE, true)
+        this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.IDLE
       }
     })
   }
 
   run() {
-    // 当前状态
-    switch (this.currentState) {
-      case this.stateMachines.get(PARAMS_NAME_ENUM.IDLE):
-      case this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT):
-        if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
-          this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT)
-        } else if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
-          this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
-        } else {
-          // 没有匹配到动作也强制触发 run 当前状态
-          this.currentState = this.currentState
-        }
-        break
-      default:
-        this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
+    const next = this.transitons.find(({ check }) => check())
+
+    if (next) {
+      console.log(`【状态机】状态切换: `, this.currentState, next)
+      this.currentState = this.stateMachines.get(next.state)
+    } else {
+      this.currentState = this.currentState
     }
   }
 }

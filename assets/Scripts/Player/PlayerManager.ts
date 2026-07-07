@@ -21,6 +21,8 @@ export class PlayerManager extends EntityManager {
   targetY: number = 0
   /** 角色移动速度 */
   private readonly speed: number = 0.1
+  /** 角色正在移动 */
+  private isMoving: boolean = false
 
   onLoad() {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
@@ -55,24 +57,26 @@ export class PlayerManager extends EntityManager {
   updatePos() {
     // console.log('updatePos', this.targetX, this.targetY, this.x, this.y) // 调试信息，用于打印当前位置和目标位置
 
+    // X轴方向移动逻辑
+    if (this.x < this.targetX) {
+      this.x += this.speed // 如果目标X在右侧，则向右移动
+    } else if (this.x > this.targetX) {
+      this.x -= this.speed // 如果目标X在左侧，则向左移动
+    }
+
+    // Y轴方向移动逻辑
+    if (this.y < this.targetY) {
+      this.y += this.speed // 如果目标Y在下方，则向下移动
+    } else if (this.y > this.targetY) {
+      this.y -= this.speed // 如果目标Y在上方，则向上移动
+    }
+
     // 防止鬼畜：当当前位置与目标位置非常接近时，直接设置为目标位置，避免微小抖动
-    if (Math.abs(this.targetX - this.x) < 0.1 && Math.abs(this.targetY - this.y) < 0.1) {
+    if (Math.abs(this.targetX - this.x) < 0.1 && Math.abs(this.targetY - this.y) < 0.1 && this.isMoving) {
+      this.isMoving = false
       this.x = this.targetX // 直接设置X坐标为目标值
       this.y = this.targetY // 直接设置Y坐标为目标值
-    } else {
-      // X轴方向移动逻辑
-      if (this.x < this.targetX) {
-        this.x += this.speed // 如果目标X在右侧，则向右移动
-      } else if (this.x > this.targetX) {
-        this.x -= this.speed // 如果目标X在左侧，则向左移动
-      }
-
-      // Y轴方向移动逻辑
-      if (this.y < this.targetY) {
-        this.y += this.speed // 如果目标Y在下方，则向下移动
-      } else if (this.y > this.targetY) {
-        this.y -= this.speed // 如果目标Y在上方，则向上移动
-      }
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
     }
   }
 
@@ -87,20 +91,25 @@ export class PlayerManager extends EntityManager {
    * @param inputDirection - 控制器输入的方向枚举值
    */
   move(inputDirection: CONTROLLER_ENUM) {
-    // 根据输入方向更新目标位置
-    const [moveX, moveY] = CTRL_MOVE_POSITIONS[inputDirection]
-    this.targetX += moveX
-    this.targetY += moveY
-
     // 左转处理
     if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
       this.state = ENTITY_STATE_ENUM.TURNLEFT
       this.direction = TURN_DIRECTIONS[inputDirection][this.direction]
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
     }
     // 右转处理
     else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
       this.state = ENTITY_STATE_ENUM.TURNRIGHT
       this.direction = TURN_DIRECTIONS[inputDirection][this.direction]
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
+    }
+    // 移动处理
+    else {
+      this.isMoving = true
+      // 根据输入方向更新目标位置
+      const [moveX, moveY] = CTRL_MOVE_POSITIONS[inputDirection]
+      this.targetX += moveX
+      this.targetY += moveY
     }
   }
 
@@ -171,7 +180,7 @@ export class PlayerManager extends EntityManager {
         tile2 = tileMapInfo[x + 1][y]
       } else if (direction === DIRECTION_ENUM.LEFT) {
         tile1 = tileMapInfo[x - 1][y - 1]
-        tile2 = tileMapInfo[x][y + 1]
+        tile2 = tileMapInfo[x][y - 1]
       } else if (direction === DIRECTION_ENUM.BOTTOM) {
         tile1 = tileMapInfo[x - 1][y + 1]
         tile2 = tileMapInfo[x - 1][y]

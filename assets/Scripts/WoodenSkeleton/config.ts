@@ -1,5 +1,6 @@
 import { SubStateMachine } from '../../Base/SubStateMachine'
 import { PARAMS_NAME_ENUM } from '../../Enum'
+import AttackSubStateMachine from './AttackSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 
 export interface IIintStateItem {
@@ -8,4 +9,7 @@ export interface IIintStateItem {
 }
 
 /** 注册/初始化状态机参数 */
-export const INIT_FSM_LIST: IIintStateItem[] = [{ param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine }]
+export const INIT_FSM_LIST: IIintStateItem[] = [
+  { param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine },
+  { param: PARAMS_NAME_ENUM.ATTACK, cls: AttackSubStateMachine },
+]

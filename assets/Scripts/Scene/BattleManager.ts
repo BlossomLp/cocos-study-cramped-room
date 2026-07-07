@@ -82,13 +82,13 @@ export class BattleManager extends Component {
   /**
    * * 生成瓦片地图
    */
-  generateTileMap() {
+  async generateTileMap() {
     const tileMap: Node = createUINode()
     tileMap.setParent(this.stage)
 
     const tileMapManager = tileMap.addComponent(TileMapManager)
 
-    tileMapManager.init()
+    await tileMapManager.init()
 
     this.adaptPosition()
   }
@@ -96,18 +96,21 @@ export class BattleManager extends Component {
   /**
    * * 生成角色
    */
-  generatePlayer() {
+  async generatePlayer() {
     const player: Node = createUINode()
     player.setParent(this.stage)
 
     const playerManager = player.addComponent(PlayerManager)
-    playerManager.init(this.level.player)
+    await playerManager.init(this.level.player)
+    DataManager.Instance.player = playerManager
+    EventManager.Instance.emit(EVENT_ENUM.PLAYER_BORN, true)
   }
 
   /**
    * * 生成敌人
    */
-  generateEnemies() {
+  async generateEnemies() {
+    const promises = []
     for (let i = 0; i < this.level.enemies.length; i++) {
       const enemyNode: Node = createUINode()
       enemyNode.setParent(this.stage)
@@ -115,9 +118,12 @@ export class BattleManager extends Component {
       if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN) {
         const enemyManager = enemyNode.addComponent(WoodenSkeletonManager)
         console.log(`【生成敌人】木骷髅 --->`, enemy)
-        enemyManager.init(this.level.enemies[i])
+        promises.push(enemyManager.init(this.level.enemies[i]))
+        DataManager.Instance.enemies.push(enemyManager)
       }
     }
+
+    await Promise.all(promises)
   }
 
   /**

@@ -39,12 +39,6 @@ export default class State {
       (item: SpriteFrame, index: number) => [ANIMATION_SPEED * index, item],
     )
 
-    console.log('spriteFrames', spriteFrames, frames)
-    // track.channel.curve.assignSorted([
-    //   [0.4, { value: 0.4 }],
-    //   [0.6, { value: 0.6 }],
-    //   [0.8, { value: 0.8 }],
-    // ])
     track.channel.curve.assignSorted(frames)
 
     // 最后将轨道添加到动画剪辑以应用

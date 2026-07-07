@@ -1,7 +1,7 @@
 import DirectionSubStateMachine from '../../Base/DirectionSubStateMachine'
 import State from '../../Base/State'
 import { StateMachine } from '../../Base/StateMachine'
-import { DIRECTIONS_LIST } from './config'
+import { DIRECTIONS_LIST } from '../../Base/config'
 
 const BASE_PATH = 'texture/player/turnleft'
 

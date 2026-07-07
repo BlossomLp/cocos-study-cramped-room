@@ -1,8 +1,8 @@
 import { _decorator, Component, Sprite, UITransform } from 'cc'
-import { PlayerStateMachine } from 'db://assets/Scripts/Player/PlayerStateMachine'
 import { TILE_HEIGHT, TILE_WIDTH } from 'db://assets/Scripts/Tile/TIleManager'
 import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
 import { IEntity } from '../Levels'
+import { StateMachine } from './StateMachine'
 const { ccclass, property } = _decorator
 
 @ccclass('EntityManager')
@@ -14,7 +14,7 @@ export class EntityManager extends Component {
   y: number = 0
 
   /** 状态机 */
-  fsm: PlayerStateMachine
+  fsm: StateMachine
 
   /** 当前动作 */
   private _state: ENTITY_STATE_ENUM
@@ -69,8 +69,8 @@ export class EntityManager extends Component {
 
     const transfrom = this.getComponent(UITransform)
     transfrom.setContentSize(TILE_WIDTH * 4, TILE_HEIGHT * 4)
-    this.fsm = this.addComponent(PlayerStateMachine)
-    await this.fsm.init()
+    // this.fsm = this.addComponent(PlayerStateMachine)
+    // await this.fsm.init()
     const { type, x, y, state, direction } = params
     this.type = type
     // 设置人物初始状态

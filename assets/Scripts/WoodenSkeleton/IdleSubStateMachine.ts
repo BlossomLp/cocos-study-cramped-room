@@ -4,7 +4,7 @@ import State from '../../Base/State'
 import { StateMachine } from '../../Base/StateMachine'
 import { DIRECTIONS_LIST } from '../../Base/config'
 
-const BASE_PATH = 'texture/player/idle'
+const BASE_PATH = 'texture/woodenskeleton/idle'
 
 export default class IdleSubStateMachine extends DirectionSubStateMachine {
   constructor(fsm: StateMachine) {

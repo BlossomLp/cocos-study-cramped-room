@@ -6,6 +6,7 @@ import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { TileManager } from '../Tile/TIleManager'
 import { BLOCK_DIRECTIONS, CTRL_MOVE_POSITIONS, TURN_DIRECTIONS } from './config'
+import { PlayerStateMachine } from './PlayerStateMachine'
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerManager')
@@ -20,7 +21,6 @@ export class PlayerManager extends EntityManager {
   targetY: number = 0
   /** 角色移动速度 */
   private readonly speed: number = 0.1
-  private _moveLock: boolean = false
 
   onLoad() {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
@@ -31,6 +31,8 @@ export class PlayerManager extends EntityManager {
   }
 
   async init(params: IEntity) {
+    this.fsm = this.addComponent(PlayerStateMachine)
+    await this.fsm.init()
     this.targetX = params.x
     this.targetY = params.y
     super.init(params)
@@ -104,7 +106,6 @@ export class PlayerManager extends EntityManager {
 
   willBlock(inputDirection: CONTROLLER_ENUM) {
     const { tileMapInfo } = DataManager.Instance
-    console.log('willBlock', inputDirection)
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)

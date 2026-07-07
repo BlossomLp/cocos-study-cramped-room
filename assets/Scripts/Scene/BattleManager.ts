@@ -1,5 +1,5 @@
 import { _decorator, Component, Node } from 'cc'
-import { EVENT_ENUM } from '../../Enum'
+import { ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import Levels, { ILevel } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
@@ -7,6 +7,7 @@ import { createUINode } from '../../Utils'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { TileMapManager } from '../Tile/TileMapManager'
+import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
@@ -49,6 +50,8 @@ export class BattleManager extends Component {
       this.generateTileMap()
 
       this.generatePlayer()
+
+      this.generateEnemies()
     }
   }
 
@@ -91,15 +94,30 @@ export class BattleManager extends Component {
   }
 
   /**
-   * * 生成瓦片地图
+   * * 生成角色
    */
   generatePlayer() {
     const player: Node = createUINode()
     player.setParent(this.stage)
 
     const playerManager = player.addComponent(PlayerManager)
-    console.log(`this.level.player --->`, this.level.player)
     playerManager.init(this.level.player)
+  }
+
+  /**
+   * * 生成敌人
+   */
+  generateEnemies() {
+    for (let i = 0; i < this.level.enemies.length; i++) {
+      const enemyNode: Node = createUINode()
+      enemyNode.setParent(this.stage)
+      const enemy = this.level.enemies[i]
+      if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN) {
+        const enemyManager = enemyNode.addComponent(WoodenSkeletonManager)
+        console.log(`【生成敌人】木骷髅 --->`, enemy)
+        enemyManager.init(this.level.enemies[i])
+      }
+    }
   }
 
   /**

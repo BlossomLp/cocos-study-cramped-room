@@ -3,6 +3,7 @@ import { ITile } from '../Levels'
 import { PlayerManager } from '../Scripts/Player/PlayerManager'
 import { TileManager } from '../Scripts/Tile/TIleManager'
 import { WoodenSkeletonManager } from '../Scripts/WoodenSkeleton/WoodenSkeletonManager'
+import { DoorManager } from './../Scripts/Door/DoorManager'
 
 export class DataManager extends Singleton {
   static get Instance() {
@@ -21,6 +22,8 @@ export class DataManager extends Singleton {
   player: PlayerManager
   /** Enemies */
   enemies: WoodenSkeletonManager[] = []
+  /** Door */
+  door: DoorManager
 
   reset() {
     this.tileMapInfo = []
@@ -29,5 +32,6 @@ export class DataManager extends Singleton {
     this.mapColumnCount = 0
     this.player = null
     this.enemies = []
+    this.door = null
   }
 }

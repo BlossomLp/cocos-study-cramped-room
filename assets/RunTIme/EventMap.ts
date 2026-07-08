@@ -23,6 +23,8 @@ export interface EventMap {
   ]
   // 下一关
   [EVENT_ENUM.NEXT_LEVEL]: []
+  // 开门
+  [EVENT_ENUM.DOOR_OPEN]: []
   // 玩家出生
   [EVENT_ENUM.PLAYER_BORN]: [
     /** 是否为初始化 */

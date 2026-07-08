@@ -4,6 +4,7 @@ import Levels, { ILevel } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { createUINode } from '../../Utils'
+import { DoorManager } from '../Door/DoorManager'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { TileMapManager } from '../Tile/TileMapManager'
@@ -52,6 +53,8 @@ export class BattleManager extends Component {
       this.generatePlayer()
 
       this.generateEnemies()
+
+      this.generateDoor()
     }
   }
 
@@ -107,7 +110,7 @@ export class BattleManager extends Component {
   }
 
   /**
-   * * 生成敌人
+   * * 生成敌人 木骷髅
    */
   async generateEnemies() {
     const promises = []
@@ -124,6 +127,18 @@ export class BattleManager extends Component {
     }
 
     await Promise.all(promises)
+  }
+
+  /**
+   * * 生成门
+   */
+  async generateDoor() {
+    const door: Node = createUINode()
+    door.setParent(this.stage)
+
+    const doorManager = door.addComponent(DoorManager)
+    await doorManager.init(this.level.door)
+    DataManager.Instance.door = doorManager
   }
 
   /**

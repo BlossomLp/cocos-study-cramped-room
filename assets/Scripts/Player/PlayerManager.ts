@@ -93,9 +93,12 @@ export class PlayerManager extends EntityManager {
     // 撞墙
     if (this.willBlock(inputDirection)) return
     // 检查是否可以攻击
-    if (this.willAttack(inputDirection)) {
+    const enemyId = this.willAttack(inputDirection)
+    if (enemyId) {
       console.log('攻击')
       this.state = ENTITY_STATE_ENUM.ATTACK
+      EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemyId)
+      EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
       return
     }
     this.move(inputDirection)
@@ -235,8 +238,7 @@ export class PlayerManager extends EntityManager {
         direction === DIRECTION_ENUM.TOP &&
         inputDirection === CONTROLLER_ENUM.TOP
       ) {
-        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
-        return true
+        return enemy.id
       }
       // 向下攻击敌人
       else if (
@@ -245,8 +247,7 @@ export class PlayerManager extends EntityManager {
         direction === DIRECTION_ENUM.BOTTOM &&
         inputDirection === CONTROLLER_ENUM.BOTTOM
       ) {
-        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
-        return true
+        return enemy.id
       }
       // 向左攻击敌人
       else if (
@@ -255,8 +256,7 @@ export class PlayerManager extends EntityManager {
         direction === DIRECTION_ENUM.LEFT &&
         inputDirection === CONTROLLER_ENUM.LEFT
       ) {
-        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
-        return true
+        return enemy.id
       }
       // 向右攻击敌人
       else if (
@@ -265,11 +265,10 @@ export class PlayerManager extends EntityManager {
         direction === DIRECTION_ENUM.RIGHT &&
         inputDirection === CONTROLLER_ENUM.RIGHT
       ) {
-        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
-        return true
+        return enemy.id
       }
     }
 
-    return false
+    return ''
   }
 }

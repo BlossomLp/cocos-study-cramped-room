@@ -133,9 +133,12 @@ export class PlayerManager extends EntityManager {
   }
 
   willBlock(inputDirection: CONTROLLER_ENUM) {
-    const { tileMapInfo, enemies: allEnemies, door } = DataManager.Instance
+    const { tileMapInfo, enemies: allEnemies, door, bursts: allBursts } = DataManager.Instance
     // 获取当前活着的敌人
     const enemies = allEnemies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
+    // 获取当前活着的地裂
+    const bursts = allBursts.filter(burst => burst.state === ENTITY_STATE_ENUM.IDLE)
+
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
@@ -171,9 +174,12 @@ export class PlayerManager extends EntityManager {
       const isCollistionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
       // 判断枪头是否撞到 【门】
       const isCollistionDoor = door.state === ENTITY_STATE_ENUM.IDLE && door.x === weaponX && door.y === weaponY
+      // 判断是否会走到【地裂】上（地裂：即使地图瓦片为空也可以走）
+      const isBurst = bursts.some(burst => burst.x === x && burst.y === y)
+
       if (
         // 判断人物是否走到 【墙】
-        playerTile?.moveable &&
+        (playerTile?.moveable || isBurst) &&
         // 判断枪头是否走到 【墙】
         (!weaponTile || weaponTile.turnable) &&
         !isCollistionEnemy &&

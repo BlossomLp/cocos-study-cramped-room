@@ -4,6 +4,7 @@ import Levels, { ILevel } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { createUINode } from '../../Utils'
+import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
@@ -51,11 +52,13 @@ export class BattleManager extends Component {
 
       this.generateTileMap()
 
-      this.generatePlayer()
-
       this.generateEnemies()
 
       this.generateDoor()
+
+      this.generateBursts()
+
+      this.generatePlayer()
     }
   }
 
@@ -145,6 +148,24 @@ export class BattleManager extends Component {
     const doorManager = door.addComponent(DoorManager)
     await doorManager.init(this.level.door)
     DataManager.Instance.door = doorManager
+  }
+
+  /**
+   * * 生成地裂
+   */
+  async generateBursts() {
+    const promises = []
+    for (let i = 0; i < this.level.bursts.length; i++) {
+      const burstNode: Node = createUINode()
+      burstNode.setParent(this.stage)
+      const burstManager = burstNode.addComponent(BurstManager)
+
+      const burst = this.level.bursts[i]
+      promises.push(burstManager.init(this.level.bursts[i]))
+      DataManager.Instance.bursts.push(burstManager)
+    }
+
+    await Promise.all(promises)
   }
 
   /**

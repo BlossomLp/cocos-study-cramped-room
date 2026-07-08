@@ -111,10 +111,16 @@ const mapInfo = [
       src: 1,
       type: TILE_TYPE_ENUM.FLOOR,
     },
+    // {
+    //   src: 1,
+    //   type: TILE_TYPE_ENUM.FLOOR,
+    // },
+    // TODO: 调试代码 待删除 start
     {
-      src: 1,
-      type: TILE_TYPE_ENUM.FLOOR,
+      src: null,
+      type: null,
     },
+    // TODO: 调试代码 待删除 end
     {
       src: 1,
       type: TILE_TYPE_ENUM.FLOOR,
@@ -440,26 +446,21 @@ const enemies: Array<IEntity> = [
     state: ENTITY_STATE_ENUM.IDLE,
     type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
   },
-  // TODO： 调试代码 待删除
-  {
-    x: 1,
-    y: 6,
-    direction: DIRECTION_ENUM.TOP,
-    state: ENTITY_STATE_ENUM.IDLE,
-    type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
-  },
-  {
-    x: 2,
-    y: 2,
-    direction: DIRECTION_ENUM.BOTTOM,
-    state: ENTITY_STATE_ENUM.IDLE,
-    type: ENTITY_TYPE_ENUM.SKELETON_IRON,
-  },
 ]
 
 const spikes: Array<ISpikes> = []
 
-const bursts: Array<IEntity> = []
+// const bursts: Array<IEntity> = []
+// TODO: 调试代码 删除
+const bursts: Array<IEntity> = [
+  {
+    x: 2,
+    y: 6,
+    direction: DIRECTION_ENUM.TOP,
+    state: ENTITY_STATE_ENUM.IDLE,
+    type: ENTITY_TYPE_ENUM.BURST,
+  },
+]
 
 const door: IEntity = {
   x: 7,

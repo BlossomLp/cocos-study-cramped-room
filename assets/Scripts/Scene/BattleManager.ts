@@ -5,6 +5,7 @@ import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { createUINode } from '../../Utils'
 import { DoorManager } from '../Door/DoorManager'
+import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { TileMapManager } from '../Tile/TileMapManager'
@@ -110,7 +111,7 @@ export class BattleManager extends Component {
   }
 
   /**
-   * * 生成敌人 木骷髅
+   * * 生成敌人
    */
   async generateEnemies() {
     const promises = []
@@ -121,6 +122,11 @@ export class BattleManager extends Component {
       if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN) {
         const enemyManager = enemyNode.addComponent(WoodenSkeletonManager)
         console.log(`【生成敌人】木骷髅 --->`, enemy)
+        promises.push(enemyManager.init(this.level.enemies[i]))
+        DataManager.Instance.enemies.push(enemyManager)
+      } else if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_IRON) {
+        const enemyManager = enemyNode.addComponent(IronSkeletonManager)
+        console.log(`【生成敌人】铁骷髅 --->`, enemy)
         promises.push(enemyManager.init(this.level.enemies[i]))
         DataManager.Instance.enemies.push(enemyManager)
       }

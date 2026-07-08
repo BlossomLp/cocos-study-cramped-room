@@ -440,6 +440,21 @@ const enemies: Array<IEntity> = [
     state: ENTITY_STATE_ENUM.IDLE,
     type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
   },
+  // TODO： 调试代码 待删除
+  {
+    x: 2,
+    y: 4,
+    direction: DIRECTION_ENUM.TOP,
+    state: ENTITY_STATE_ENUM.IDLE,
+    type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
+  },
+  {
+    x: 2,
+    y: 2,
+    direction: DIRECTION_ENUM.BOTTOM,
+    state: ENTITY_STATE_ENUM.IDLE,
+    type: ENTITY_TYPE_ENUM.SKELETON_IRON,
+  },
 ]
 
 const spikes: Array<ISpikes> = []

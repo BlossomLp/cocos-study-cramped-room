@@ -1,8 +1,8 @@
+import { EnemyManager } from '../Base/EnemyManager'
 import Singleton from '../Base/Singleton'
 import { ITile } from '../Levels'
 import { PlayerManager } from '../Scripts/Player/PlayerManager'
 import { TileManager } from '../Scripts/Tile/TIleManager'
-import { WoodenSkeletonManager } from '../Scripts/WoodenSkeleton/WoodenSkeletonManager'
 import { DoorManager } from './../Scripts/Door/DoorManager'
 
 export class DataManager extends Singleton {
@@ -21,7 +21,7 @@ export class DataManager extends Singleton {
   /** Player */
   player: PlayerManager
   /** Enemies */
-  enemies: WoodenSkeletonManager[] = []
+  enemies: EnemyManager[] = []
   /** Door */
   door: DoorManager
 

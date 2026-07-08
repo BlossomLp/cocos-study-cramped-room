@@ -97,3 +97,48 @@ export const BLOCK_DIRECTIONS: MoveBlockDirections = {
     [CONTROLLER_ENUM.TURNRIGHT]: ENTITY_STATE_ENUM.BLOCKTURNRIGHT,
   },
 }
+
+type TurnCheckPositions = Record<
+  CONTROLLER_ENUM.TURNLEFT | CONTROLLER_ENUM.TURNRIGHT,
+  Record<DIRECTION_ENUM, [[number, number], [number, number]]>
+>
+
+/** 转向时枪头经过的两个检测点 */
+export const TURN_CHECK_POSITIONS: TurnCheckPositions = {
+  [CONTROLLER_ENUM.TURNLEFT]: {
+    [DIRECTION_ENUM.TOP]: [
+      [-1, 1],
+      [-1, 0],
+    ],
+    [DIRECTION_ENUM.LEFT]: [
+      [-1, 1],
+      [0, 1],
+    ],
+    [DIRECTION_ENUM.BOTTOM]: [
+      [1, 1],
+      [1, 0],
+    ],
+    [DIRECTION_ENUM.RIGHT]: [
+      [1, -1],
+      [0, -1],
+    ],
+  },
+  [CONTROLLER_ENUM.TURNRIGHT]: {
+    [DIRECTION_ENUM.TOP]: [
+      [1, -1],
+      [1, 0],
+    ],
+    [DIRECTION_ENUM.LEFT]: [
+      [-1, -1],
+      [0, -1],
+    ],
+    [DIRECTION_ENUM.BOTTOM]: [
+      [-1, 1],
+      [-1, 0],
+    ],
+    [DIRECTION_ENUM.RIGHT]: [
+      [1, 1],
+      [0, 1],
+    ],
+  },
+}

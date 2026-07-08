@@ -442,8 +442,8 @@ const enemies: Array<IEntity> = [
   },
   // TODO： 调试代码 待删除
   {
-    x: 2,
-    y: 4,
+    x: 1,
+    y: 6,
     direction: DIRECTION_ENUM.TOP,
     state: ENTITY_STATE_ENUM.IDLE,
     type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,

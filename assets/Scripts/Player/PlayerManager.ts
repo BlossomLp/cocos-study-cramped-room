@@ -4,8 +4,7 @@ import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
-import { TileManager } from '../Tile/TIleManager'
-import { BLOCK_DIRECTIONS, CTRL_MOVE_POSITIONS, TURN_DIRECTIONS } from './config'
+import { BLOCK_DIRECTIONS, CTRL_MOVE_POSITIONS, TURN_CHECK_POSITIONS, TURN_DIRECTIONS } from './config'
 import { PlayerStateMachine } from './PlayerStateMachine'
 const { ccclass, property } = _decorator
 
@@ -90,8 +89,7 @@ export class PlayerManager extends EntityManager {
     )
       return
     if (this.isMoving) return
-    // 撞墙
-    if (this.willBlock(inputDirection)) return
+
     // 检查是否可以攻击
     const enemyId = this.willAttack(inputDirection)
     if (enemyId) {
@@ -101,6 +99,9 @@ export class PlayerManager extends EntityManager {
       EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
       return
     }
+
+    // 撞墙
+    if (this.willBlock(inputDirection)) return
     this.move(inputDirection)
   }
 
@@ -132,7 +133,9 @@ export class PlayerManager extends EntityManager {
   }
 
   willBlock(inputDirection: CONTROLLER_ENUM) {
-    const { tileMapInfo } = DataManager.Instance
+    const { tileMapInfo, enemies: allEnemies, door } = DataManager.Instance
+    // 获取当前活着的敌人
+    const enemies = allEnemies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
@@ -164,49 +167,35 @@ export class PlayerManager extends EntityManager {
       }
       const playerTile = tileMapInfo[x][y]
       const weaponTile = tileMapInfo[weaponX][weaponY]
-      if (playerTile?.moveable && (!weaponTile || weaponTile.turnable)) return false
-    }
-    // ----- 转向（左转） -----
-    else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
-      // 转向要判断枪头到目标位置的途经位置2个(没有瓦片 || 瓦片可转向)
-      let tile1: TileManager | null
-      let tile2: TileManager | null
-      if (direction === DIRECTION_ENUM.TOP) {
-        tile1 = tileMapInfo[x - 1][y - 1]
-        tile2 = tileMapInfo[x - 1][y]
-      } else if (direction === DIRECTION_ENUM.LEFT) {
-        tile1 = tileMapInfo[x - 1][y + 1]
-        tile2 = tileMapInfo[x][y + 1]
-      } else if (direction === DIRECTION_ENUM.BOTTOM) {
-        tile1 = tileMapInfo[x + 1][y + 1]
-        tile2 = tileMapInfo[x + 1][y]
-      } else if (direction === DIRECTION_ENUM.RIGHT) {
-        tile1 = tileMapInfo[x + 1][y - 1]
-        tile2 = tileMapInfo[x][y - 1]
-      }
-      if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable)) {
+      // 判断枪头是否撞到 【敌人】
+      const isCollistionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
+      // 判断枪头是否撞到 【门】
+      const isCollistionDoor = door.state === ENTITY_STATE_ENUM.IDLE && door.x === weaponX && door.y === weaponY
+      if (
+        // 判断人物是否走到 【墙】
+        playerTile?.moveable &&
+        // 判断枪头是否走到 【墙】
+        (!weaponTile || weaponTile.turnable) &&
+        !isCollistionEnemy &&
+        !isCollistionDoor
+      )
         return false
-      }
     }
-    // ----- 转向（右转） -----
-    else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
-      // 转向要判断枪头到目标位置的途经位置2个(没有瓦片 || 瓦片可转向)
-      let tile1: TileManager | null
-      let tile2: TileManager | null
-      if (direction === DIRECTION_ENUM.TOP) {
-        tile1 = tileMapInfo[x + 1][y - 1]
-        tile2 = tileMapInfo[x + 1][y]
-      } else if (direction === DIRECTION_ENUM.LEFT) {
-        tile1 = tileMapInfo[x - 1][y - 1]
-        tile2 = tileMapInfo[x][y - 1]
-      } else if (direction === DIRECTION_ENUM.BOTTOM) {
-        tile1 = tileMapInfo[x - 1][y + 1]
-        tile2 = tileMapInfo[x - 1][y]
-      } else if (direction === DIRECTION_ENUM.RIGHT) {
-        tile1 = tileMapInfo[x + 1][y + 1]
-        tile2 = tileMapInfo[x][y + 1]
-      }
-      if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable)) {
+    // ----- 转向 -----
+    else if (inputDirection === CONTROLLER_ENUM.TURNLEFT || inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+      const [[dx1, dy1], [dx2, dy2]] = TURN_CHECK_POSITIONS[inputDirection][direction]
+
+      const pos1: [number, number] = [x + dx1, y + dy1]
+      const pos2: [number, number] = [x + dx2, y + dy2]
+
+      const tile1 = tileMapInfo[pos1[0]][pos1[1]]
+      const tile2 = tileMapInfo[pos2[0]][pos2[1]]
+
+      const isCollisionEnemy = enemies.some(
+        enemy => (enemy.x === pos1[0] && enemy.y === pos1[1]) || (enemy.x === pos2[0] && enemy.y === pos2[1]),
+      )
+
+      if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable) && !isCollisionEnemy) {
         return false
       }
     }

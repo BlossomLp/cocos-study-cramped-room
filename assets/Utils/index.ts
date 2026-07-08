@@ -24,3 +24,12 @@ const getFrameIndex = (frameName: string): number => {
 }
 /** 帧动画排序 */
 export const sortSpriteFrames = arr => arr.sort((a, b) => getFrameIndex(a.name) - getFrameIndex(b.name))
+
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+export const genRandomStrByLen = (len: number) => {
+  let str = ''
+  for (let i = 0; i < len; i++) {
+    str += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return str
+}

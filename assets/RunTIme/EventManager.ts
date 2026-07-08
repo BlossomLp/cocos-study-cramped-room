@@ -1,5 +1,7 @@
 import Singleton from '../Base/Singleton'
+import type { EventMap } from './EventMap'
 
+type EventCallback<T extends unknown[]> = (...args: T) => void
 interface IEventCallback {
   callback: Function
   context?: unknown
@@ -10,9 +12,9 @@ export class EventManager extends Singleton {
     return super.getInstance<EventManager>()
   }
 
-  private eventDic: Map<string, Array<IEventCallback>> = new Map()
+  private eventDic = new Map<keyof EventMap, IEventCallback[]>()
 
-  on(eventName: string, callback: Function, context?: unknown) {
+  on<K extends keyof EventMap>(eventName: K, callback: EventCallback<EventMap[K]>, context?: unknown) {
     if (!this.eventDic.has(eventName)) {
       this.eventDic.set(eventName, [])
     }
@@ -20,7 +22,7 @@ export class EventManager extends Singleton {
     callbacks.push({ callback, context })
   }
 
-  emit(eventName: string, ...args: unknown[]) {
+  emit<K extends keyof EventMap>(eventName: K, ...args: EventMap[K]) {
     const callbacks = this.eventDic.get(eventName)
     if (callbacks) {
       callbacks.forEach(({ callback, context }) => {
@@ -29,7 +31,7 @@ export class EventManager extends Singleton {
     }
   }
 
-  off(eventName: string, callback: Function) {
+  off<K extends keyof EventMap>(eventName: K, callback: EventCallback<EventMap[K]>) {
     const callbacks = this.eventDic.get(eventName)
     if (callbacks) {
       const index = callbacks.findIndex(cb => cb.callback === callback)

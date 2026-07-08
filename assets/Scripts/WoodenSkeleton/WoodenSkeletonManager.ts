@@ -4,6 +4,7 @@ import { DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
+import { genRandomStrByLen } from '../../Utils'
 import { WoodenSkeletonStateMachine } from './WoodenSkeletonStateMachine'
 const { ccclass, property } = _decorator
 
@@ -13,6 +14,7 @@ const { ccclass, property } = _decorator
  */
 @ccclass('WoodenSkeletonManager')
 export class WoodenSkeletonManager extends EntityManager {
+  id: string = genRandomStrByLen(10)
   /** 角色坐标 x */
   x: number = 0
   /** 角色坐标 y */
@@ -26,6 +28,7 @@ export class WoodenSkeletonManager extends EntityManager {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection, this)
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack, this)
+    EventManager.Instance.on(EVENT_ENUM.ATTACK_ENEMY, this.onDead, this)
 
     this.onChangeDirection(true)
   }
@@ -33,6 +36,8 @@ export class WoodenSkeletonManager extends EntityManager {
   onDestroy(): void {
     EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
     EventManager.Instance.off(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack)
+    EventManager.Instance.off(EVENT_ENUM.ATTACK_ENEMY, this.onDead)
   }
 
   /**
@@ -44,6 +49,7 @@ export class WoodenSkeletonManager extends EntityManager {
     const player = DataManager.Instance.player
     // 如果玩家不存在，则直接返回
     if (!player) return
+    if (this.state === ENTITY_STATE_ENUM.DEATH) return
     // 解构玩家的x和y坐标
     const { x: playerX, y: playerY } = player
     // 计算玩家和当前对象在x轴和y轴上的距离
@@ -70,6 +76,7 @@ export class WoodenSkeletonManager extends EntityManager {
   onAttack() {
     const player = DataManager.Instance.player
     if (!player) return
+    if (this.state === ENTITY_STATE_ENUM.DEATH) return
     const { x: playerX, y: playerY, state } = player
     // 玩家已死
     const isPlayerDead = state === ENTITY_STATE_ENUM.DEATH || state === ENTITY_STATE_ENUM.AIRDEATH
@@ -86,6 +93,12 @@ export class WoodenSkeletonManager extends EntityManager {
       EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
+    }
+  }
+  onDead(id: string) {
+    console.log('【木骷髅】onDead', id)
+    if (id === this.id) {
+      this.state = ENTITY_STATE_ENUM.DEATH
     }
   }
 }

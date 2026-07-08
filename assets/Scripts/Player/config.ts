@@ -1,6 +1,7 @@
 import { SubStateMachine } from '../../Base/SubStateMachine'
 import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import AirDeathSubStateMachine from './AirDeathSubStateMachine'
+import AttackSubStateMachine from './AttackSubStateMachine'
 import BlockBackSubStateMachine from './BlockBackSubStateMachine'
 import BlockFrontSubStateMachine from './BlockFrontSubStateMachine'
 import BlockLeftSubStateMachine from './BlockLeftSubStateMachine'
@@ -29,6 +30,7 @@ export const INIT_FSM_LIST: IIintStateItem[] = [
   { param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine },
   { param: PARAMS_NAME_ENUM.DEATH, cls: DeathSubStateMachine },
   { param: PARAMS_NAME_ENUM.AIRDEATH, cls: AirDeathSubStateMachine },
+  { param: PARAMS_NAME_ENUM.ATTACK, cls: AttackSubStateMachine },
 ]
 type CtrlMovePositions = Record<CONTROLLER_ENUM, [number, number]>
 /** 操作按钮角色移动 */

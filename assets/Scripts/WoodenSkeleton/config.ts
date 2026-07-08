@@ -1,6 +1,7 @@
 import { SubStateMachine } from '../../Base/SubStateMachine'
 import { PARAMS_NAME_ENUM } from '../../Enum'
 import AttackSubStateMachine from './AttackSubStateMachine'
+import DeathSubStateMachine from './DeathSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 
 export interface IIintStateItem {
@@ -12,4 +13,5 @@ export interface IIintStateItem {
 export const INIT_FSM_LIST: IIintStateItem[] = [
   { param: PARAMS_NAME_ENUM.IDLE, cls: IdleSubStateMachine },
   { param: PARAMS_NAME_ENUM.ATTACK, cls: AttackSubStateMachine },
+  { param: PARAMS_NAME_ENUM.DEATH, cls: DeathSubStateMachine },
 ]

@@ -49,7 +49,7 @@ export class PlayerStateMachine extends StateMachine {
       const name = this.animationComponent.defaultClip.name
       console.log('Animation.EventType.FINISHED', name)
       // 白名单: 这些动作完成后恢复到 idle 状态
-      const whiteList = ['turn', 'block']
+      const whiteList = ['turn', 'block', 'attack']
       if (whiteList.some(item => name.includes(item))) {
         // this.setParams(PARAMS_NAME_ENUM.IDLE, true)
         this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.IDLE

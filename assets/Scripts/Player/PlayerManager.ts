@@ -83,10 +83,21 @@ export class PlayerManager extends EntityManager {
   }
 
   inputHandle(inputDirection: CONTROLLER_ENUM) {
-    if (this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH) return
+    if (
+      this.state === ENTITY_STATE_ENUM.DEATH ||
+      this.state === ENTITY_STATE_ENUM.AIRDEATH ||
+      this.state === ENTITY_STATE_ENUM.ATTACK
+    )
+      return
     if (this.isMoving) return
     // 撞墙
     if (this.willBlock(inputDirection)) return
+    // 检查是否可以攻击
+    if (this.willAttack(inputDirection)) {
+      console.log('攻击')
+      this.state = ENTITY_STATE_ENUM.ATTACK
+      return
+    }
     this.move(inputDirection)
   }
 
@@ -203,5 +214,62 @@ export class PlayerManager extends EntityManager {
 
   onDead(type: ENTITY_STATE_ENUM) {
     this.state = type
+  }
+
+  willAttack(inputDirection: CONTROLLER_ENUM) {
+    const enemies = DataManager.Instance.enemies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
+    if (enemies.length === 0) return false
+    const { targetX, targetY, direction } = this
+    const attackDistance = 1
+
+    // 人物前方位置上怪物则触发攻击
+    for (let i = 0; i < enemies.length; i++) {
+      let enemy = enemies[i]
+      const enemyX = Math.round(enemy.x)
+      const enemyY = Math.round(enemy.y)
+
+      // 向上攻击敌人
+      if (
+        enemyX === targetX &&
+        enemyY === targetY - attackDistance - 1 &&
+        direction === DIRECTION_ENUM.TOP &&
+        inputDirection === CONTROLLER_ENUM.TOP
+      ) {
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
+        return true
+      }
+      // 向下攻击敌人
+      else if (
+        enemyX === targetX &&
+        enemyY === targetY + attackDistance + 1 &&
+        direction === DIRECTION_ENUM.BOTTOM &&
+        inputDirection === CONTROLLER_ENUM.BOTTOM
+      ) {
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
+        return true
+      }
+      // 向左攻击敌人
+      else if (
+        enemyX === targetX - attackDistance - 1 &&
+        enemyY === targetY &&
+        direction === DIRECTION_ENUM.LEFT &&
+        inputDirection === CONTROLLER_ENUM.LEFT
+      ) {
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
+        return true
+      }
+      // 向右攻击敌人
+      else if (
+        enemyX === targetX + attackDistance + 1 &&
+        enemyY === targetY &&
+        direction === DIRECTION_ENUM.RIGHT &&
+        inputDirection === CONTROLLER_ENUM.RIGHT
+      ) {
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemy.id)
+        return true
+      }
+    }
+
+    return false
   }
 }

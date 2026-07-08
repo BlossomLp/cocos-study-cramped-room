@@ -3,7 +3,7 @@ import State from '../../Base/State'
 import { StateMachine } from '../../Base/StateMachine'
 import { DIRECTIONS_LIST } from '../../Base/config'
 
-const BASE_PATH = 'texture/player/death'
+const BASE_PATH = 'texture/player/airdeath'
 
 /**
  * 死亡子状态机类，继承自方向子状态机

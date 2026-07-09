@@ -13,6 +13,10 @@ export abstract class SubStateMachine {
   }
 
   set currentState(state: State) {
+    if (!state) {
+      debugger
+      return
+    }
     this._currentState = state
     this._currentState.run()
   }

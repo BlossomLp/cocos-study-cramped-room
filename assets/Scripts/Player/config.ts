@@ -107,7 +107,7 @@ type TurnCheckPositions = Record<
 export const TURN_CHECK_POSITIONS: TurnCheckPositions = {
   [CONTROLLER_ENUM.TURNLEFT]: {
     [DIRECTION_ENUM.TOP]: [
-      [-1, 1],
+      [-1, -1],
       [-1, 0],
     ],
     [DIRECTION_ENUM.LEFT]: [

@@ -142,6 +142,8 @@ export class PlayerManager extends EntityManager {
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
+    console.log('开始碰撞检测 -> ', x, y)
+
     // ----- 移动 -----
     if (
       inputDirection === CONTROLLER_ENUM.TOP ||
@@ -171,9 +173,9 @@ export class PlayerManager extends EntityManager {
       const playerTile = tileMapInfo[x][y]
       const weaponTile = tileMapInfo[weaponX][weaponY]
       // 判断枪头是否撞到 【敌人】
-      const isCollistionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
+      const isCollisionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
       // 判断枪头是否撞到 【门】
-      const isCollistionDoor = door.state === ENTITY_STATE_ENUM.IDLE && door.x === weaponX && door.y === weaponY
+      const isCollisionDoor = door.state === ENTITY_STATE_ENUM.IDLE && door.x === weaponX && door.y === weaponY
       // 判断是否会走到【地裂】上（地裂：即使地图瓦片为空也可以走）
       const isBurst = bursts.some(burst => burst.x === x && burst.y === y)
 
@@ -182,8 +184,8 @@ export class PlayerManager extends EntityManager {
         (playerTile?.moveable || isBurst) &&
         // 判断枪头是否走到 【墙】
         (!weaponTile || weaponTile.turnable) &&
-        !isCollistionEnemy &&
-        !isCollistionDoor
+        !isCollisionEnemy &&
+        !isCollisionDoor
       )
         return false
     }
@@ -191,14 +193,16 @@ export class PlayerManager extends EntityManager {
     else if (inputDirection === CONTROLLER_ENUM.TURNLEFT || inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
       const [[dx1, dy1], [dx2, dy2]] = TURN_CHECK_POSITIONS[inputDirection][direction]
 
-      const pos1: [number, number] = [x + dx1, y + dy1]
-      const pos2: [number, number] = [x + dx2, y + dy2]
+      const pos1 = { x: x + dx1, y: y + dy1 }
+      const pos2 = { x: x + dx2, y: y + dy2 }
 
-      const tile1 = tileMapInfo[pos1[0]][pos1[1]]
-      const tile2 = tileMapInfo[pos2[0]][pos2[1]]
+      console.log(`转向碰撞检测[${inputDirection}] -> `, pos1, pos2)
+
+      const tile1 = tileMapInfo[pos1.x][pos1.y]
+      const tile2 = tileMapInfo[pos2.x][pos2.y]
 
       const isCollisionEnemy = enemies.some(
-        enemy => (enemy.x === pos1[0] && enemy.y === pos1[1]) || (enemy.x === pos2[0] && enemy.y === pos2[1]),
+        enemy => (enemy.x === pos1.x && enemy.y === pos1.y) || (enemy.x === pos2.x && enemy.y === pos2.y),
       )
 
       if ((!tile1 || tile1.turnable) && (!tile2 || tile2.turnable) && !isCollisionEnemy) {

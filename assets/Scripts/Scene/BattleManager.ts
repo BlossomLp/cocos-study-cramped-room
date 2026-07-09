@@ -8,6 +8,7 @@ import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { TileMapManager } from '../Tile/TileMapManager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
@@ -29,7 +30,7 @@ export class BattleManager extends Component {
   }
 
   start() {
-    this.genatrateStage()
+    this.generateStage()
     this.initLevel()
   }
 
@@ -58,6 +59,8 @@ export class BattleManager extends Component {
 
       this.generateBursts()
 
+      this.generateSpikes()
+
       this.generatePlayer()
     }
   }
@@ -81,7 +84,7 @@ export class BattleManager extends Component {
   /**
    * * 生成舞台
    */
-  genatrateStage() {
+  generateStage() {
     this.stage = createUINode()
     this.stage.setParent(this.node)
   }
@@ -124,12 +127,12 @@ export class BattleManager extends Component {
       const enemy = this.level.enemies[i]
       if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN) {
         const enemyManager = enemyNode.addComponent(WoodenSkeletonManager)
-        console.log(`【生成敌人】木骷髅 --->`, enemy)
+        // console.log(`【生成敌人】木骷髅 --->`, enemy)
         promises.push(enemyManager.init(this.level.enemies[i]))
         DataManager.Instance.enemies.push(enemyManager)
       } else if (enemy.type === ENTITY_TYPE_ENUM.SKELETON_IRON) {
         const enemyManager = enemyNode.addComponent(IronSkeletonManager)
-        console.log(`【生成敌人】铁骷髅 --->`, enemy)
+        // console.log(`【生成敌人】铁骷髅 --->`, enemy)
         promises.push(enemyManager.init(this.level.enemies[i]))
         DataManager.Instance.enemies.push(enemyManager)
       }
@@ -163,6 +166,24 @@ export class BattleManager extends Component {
       const burst = this.level.bursts[i]
       promises.push(burstManager.init(this.level.bursts[i]))
       DataManager.Instance.bursts.push(burstManager)
+    }
+
+    await Promise.all(promises)
+  }
+
+  /**
+   * * 生成尖刺
+   */
+  async generateSpikes() {
+    const promises = []
+    for (let i = 0; i < this.level.spikes.length; i++) {
+      const spikesNode: Node = createUINode()
+      spikesNode.setParent(this.stage)
+      const spikesManager = spikesNode.addComponent(SpikesManager)
+
+      const spike = this.level.spikes[i]
+      promises.push(spikesManager.init(spike))
+      DataManager.Instance.spikes.push(spikesManager)
     }
 
     await Promise.all(promises)

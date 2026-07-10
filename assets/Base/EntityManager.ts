@@ -2,11 +2,13 @@ import { _decorator, Component, Sprite, UITransform } from 'cc'
 import { TILE_HEIGHT, TILE_WIDTH } from 'db://assets/Scripts/Tile/TIleManager'
 import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
 import { IEntity } from '../Levels'
+import { genRandomStrByLen } from '../Utils'
 import { StateMachine } from './StateMachine'
 const { ccclass, property } = _decorator
 
 @ccclass('EntityManager')
 export class EntityManager extends Component {
+  id: string = genRandomStrByLen(10)
   type: ENTITY_TYPE_ENUM
   /** 角色坐标 x */
   x: number = 0
@@ -58,17 +60,20 @@ export class EntityManager extends Component {
   set direction(value: DIRECTION_ENUM) {
     // 将传入的方向值赋给私有属性_direction
     this._direction = value
+    if (!this.fsm) {
+      debugger
+    }
     // 在有限状态机中设置方向参数，使用DIRECTION_ORDER_ENUM映射对应的顺序值
     this.fsm.setParams(PARAMS_NAME_ENUM.DIRECTION, DIRECTION_ORDER_ENUM[this._direction])
   }
 
-  async init(params: IEntity) {
+  init(params: IEntity) {
     console.log('EntityManager init', params)
     const sprite = this.node.addComponent(Sprite)
     sprite.sizeMode = Sprite.SizeMode.CUSTOM
 
-    const transfrom = this.getComponent(UITransform)
-    transfrom.setContentSize(TILE_WIDTH * 4, TILE_HEIGHT * 4)
+    const transform = this.getComponent(UITransform)
+    transform.setContentSize(TILE_WIDTH * 4, TILE_HEIGHT * 4)
     // this.fsm = this.addComponent(PlayerStateMachine)
     // await this.fsm.init()
     const { type, x, y, state, direction } = params
@@ -81,7 +86,7 @@ export class EntityManager extends Component {
     // 设置人物初始方向
     this.direction = direction
   }
-
+  onDestroy() {}
   /**
    * 更新角色位置的方法
    * 该方法负责更新角色在游戏场景中的位置，通过计算瓦片坐标转换为屏幕坐标

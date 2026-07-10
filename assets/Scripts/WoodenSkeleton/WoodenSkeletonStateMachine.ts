@@ -10,7 +10,7 @@ const { ccclass, property } = _decorator
  */
 @ccclass('WoodenSkeletonStateMachine')
 export class WoodenSkeletonStateMachine extends StateMachine {
-  private readonly transitons = INIT_FSM_LIST.map(({ param }) => ({
+  private readonly transitions = INIT_FSM_LIST.map(({ param }) => ({
     state: param,
     check: () => this.params.get(param).value,
   }))
@@ -58,7 +58,7 @@ export class WoodenSkeletonStateMachine extends StateMachine {
   }
 
   run() {
-    const next = this.transitons.find(({ check }) => check())
+    const next = this.transitions.find(({ check }) => check())
     if (next) {
       this.currentState = this.stateMachines.get(next.state)
     } else {

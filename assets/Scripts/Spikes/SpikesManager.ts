@@ -59,8 +59,8 @@ export class SpikesManager extends Component {
     console.log('SpikesManager init', params)
     const sprite = this.node.addComponent(Sprite)
     sprite.sizeMode = Sprite.SizeMode.CUSTOM
-    const transfrom = this.getComponent(UITransform)
-    transfrom.setContentSize(TILE_WIDTH * 4, TILE_HEIGHT * 4)
+    const transform = this.getComponent(UITransform)
+    transform.setContentSize(TILE_WIDTH * 4, TILE_HEIGHT * 4)
 
     this.fsm = this.node.addComponent(SpikesStateMachine)
     await this.fsm.init()

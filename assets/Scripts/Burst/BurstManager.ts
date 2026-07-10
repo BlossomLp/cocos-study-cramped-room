@@ -19,8 +19,8 @@ export class BurstManager extends EntityManager {
     this.fsm = this.addComponent(BurstStateMachine)
     await this.fsm.init()
     super.init(params)
-    const transfrom = this.getComponent(UITransform)
-    transfrom.setContentSize(TILE_WIDTH, TILE_HEIGHT)
+    const transform = this.getComponent(UITransform)
+    transform.setContentSize(TILE_WIDTH, TILE_HEIGHT)
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onBurst, this)
   }
 

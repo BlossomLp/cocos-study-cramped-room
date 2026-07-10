@@ -19,7 +19,7 @@ export class DataManager extends Singleton {
   mapRowCount: number
   /** 地图列数 */
   mapColumnCount: number
-  levelIndex: number = 1
+  levelIndex: number = 2
   /** Player */
   player: PlayerManager
   /** Enemies */

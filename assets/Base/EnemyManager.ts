@@ -3,7 +3,6 @@ import { DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '../Enum'
 import { IEntity } from '../Levels'
 import { DataManager } from '../RunTIme/DataManager'
 import { EventManager } from '../RunTIme/EventManager'
-import { genRandomStrByLen } from '../Utils'
 import { EntityManager } from './EntityManager'
 const { ccclass, property } = _decorator
 
@@ -13,12 +12,6 @@ const { ccclass, property } = _decorator
  */
 @ccclass('EnemyManager')
 export class EnemyManager extends EntityManager {
-  id: string = genRandomStrByLen(10)
-  /** 角色坐标 x */
-  x: number = 0
-  /** 角色坐标 y */
-  y: number = 0
-
   async init(params: IEntity) {
     super.init(params)
 
@@ -33,6 +26,7 @@ export class EnemyManager extends EntityManager {
     EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
     EventManager.Instance.off(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection)
     EventManager.Instance.off(EVENT_ENUM.ATTACK_ENEMY, this.onDead)
+    super.onDestroy()
   }
 
   /**
@@ -70,7 +64,7 @@ export class EnemyManager extends EntityManager {
 
   onDead(id: string) {
     console.log('【怪物死亡】onDead', id)
-    if (id === this.id) {
+    if (id === this.id && this.state !== ENTITY_STATE_ENUM.DEATH) {
       this.state = ENTITY_STATE_ENUM.DEATH
     }
   }

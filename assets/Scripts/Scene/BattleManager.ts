@@ -1,5 +1,5 @@
 import { _decorator, Component, Node } from 'cc'
-import { ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import { ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import Levels, { ILevel } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
@@ -22,6 +22,7 @@ export class BattleManager extends Component {
   stage: Node
 
   onLoad() {
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
   }
 
@@ -198,5 +199,24 @@ export class BattleManager extends Component {
     const disY = (mapColumnCount * TILE_HEIGHT) / 2 + 80
 
     this.stage.setPosition(-disX, disY)
+  }
+
+  /**
+   * * 检查玩家是否过关
+   */
+  checkArrived() {
+    const {
+      player: { x: playerX, y: playerY, state: playerState },
+      door: { x: doorX, y: doorY, state: doorState },
+    } = DataManager.Instance
+    if (
+      playerState !== ENTITY_STATE_ENUM.DEATH &&
+      doorState === ENTITY_STATE_ENUM.DEATH &&
+      playerX === doorX &&
+      playerY === doorY
+    ) {
+      // this.nextLevel()
+      EventManager.Instance.emit(EVENT_ENUM.NEXT_LEVEL)
+    }
   }
 }

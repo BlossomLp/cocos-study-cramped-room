@@ -12,7 +12,7 @@ const BASE_PATH = 'texture/burst'
  */
 @ccclass('BurstStateMachine')
 export class BurstStateMachine extends StateMachine {
-  private readonly transitons = INIT_FSM_LIST.map(({ param }) => ({
+  private readonly transitions = INIT_FSM_LIST.map(({ param }) => ({
     state: param,
     check: () => this.params.get(param).value,
   }))
@@ -42,11 +42,11 @@ export class BurstStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, path }) => {
       this.stateMachines.set(param, new State(this, `${BASE_PATH}/${path}`))
     })
-    console.log(`【注册木骷髅状态机】注册完成`, this.stateMachines)
+    console.log(`【注册地裂状态机】注册完成`, this.stateMachines)
   }
 
   run() {
-    const next = this.transitons.find(({ check }) => check())
+    const next = this.transitions.find(({ check }) => check())
     if (next) {
       this.currentState = this.stateMachines.get(next.state)
     } else {

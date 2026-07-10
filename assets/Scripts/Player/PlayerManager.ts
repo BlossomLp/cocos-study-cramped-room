@@ -29,6 +29,7 @@ export class PlayerManager extends EntityManager {
   }
 
   onDestroy() {
+    super.onDestroy()
     EventManager.Instance.off(EVENT_ENUM.PLAYER_CTRL, this.inputHandle)
     EventManager.Instance.off(EVENT_ENUM.ATTACK_PLAYER, this.onDead)
   }
@@ -171,7 +172,8 @@ export class PlayerManager extends EntityManager {
         weaponX = x + 1
       }
       const playerTile = tileMapInfo[x][y]
-      const weaponTile = tileMapInfo[weaponX][weaponY]
+      // 枪头可能超出边界
+      const weaponTile = tileMapInfo[weaponX]?.[weaponY]
       // 判断枪头是否撞到 【敌人】
       const isCollisionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
       // 判断枪头是否撞到 【门】

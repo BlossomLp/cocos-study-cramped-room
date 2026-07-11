@@ -42,4 +42,6 @@ export interface EventMap {
     /** 振动方向 */
     direction?: SHAKE_TYPE_ENUM,
   ]
+  [EVENT_ENUM.RECORD_STEP]: []
+  [EVENT_ENUM.REVOKE_STEP]: []
 }

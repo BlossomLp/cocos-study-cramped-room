@@ -99,8 +99,10 @@ export class PlayerManager extends EntityManager {
     const enemyId = this.willAttack(inputDirection)
     if (enemyId) {
       console.log('攻击')
+      EventManager.Instance.emit(EVENT_ENUM.RECORD_STEP)
       this.state = ENTITY_STATE_ENUM.ATTACK
       EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemyId)
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
       // EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN) // 试着换到动画结束时再触发
       return
     }
@@ -122,6 +124,8 @@ export class PlayerManager extends EntityManager {
    * @param inputDirection - 控制器输入的方向枚举值
    */
   move(inputDirection: CONTROLLER_ENUM) {
+    EventManager.Instance.emit(EVENT_ENUM.RECORD_STEP)
+
     // 左转处理
     if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
       this.state = ENTITY_STATE_ENUM.TURNLEFT

@@ -1,12 +1,14 @@
 import { EnemyManager } from '../Base/EnemyManager'
 import Singleton from '../Base/Singleton'
-import { ITile } from '../Levels'
+import { ILevel, ITile } from '../Levels'
 import { BurstManager } from '../Scripts/Burst/BurstManager'
 import { PlayerManager } from '../Scripts/Player/PlayerManager'
 import { SmokeManager } from '../Scripts/Smoke/SmokeManager'
 import { SpikesManager } from '../Scripts/Spikes/SpikesManager'
 import { TileManager } from '../Scripts/Tile/TIleManager'
 import { DoorManager } from './../Scripts/Door/DoorManager'
+
+export type IRecord = Omit<ILevel, 'mapInfo'>
 
 export class DataManager extends Singleton {
   static get Instance() {
@@ -33,6 +35,8 @@ export class DataManager extends Singleton {
   spikes: SpikesManager[] = []
   /** 烟雾（移动特效） */
   smokes: SmokeManager[] = []
+  /** 数据记录（人物每次操作就记录） */
+  records: IRecord[] = []
 
   reset() {
     this.tileMapInfo = []
@@ -45,5 +49,6 @@ export class DataManager extends Singleton {
     this.bursts = []
     this.spikes = []
     this.smokes = []
+    this.records = []
   }
 }

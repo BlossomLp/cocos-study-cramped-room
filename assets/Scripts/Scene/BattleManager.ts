@@ -2,9 +2,9 @@ import { _decorator, Component, Node } from 'cc'
 import FaderManager from '../../Base/FaderManager'
 import { ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import Levels, { ILevel } from '../../Levels'
-import { DataManager } from '../../RunTIme/DataManager'
+import { DataManager, IRecord } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
-import { createUINode } from '../../Utils'
+import { assignProps, createUINode, pickPropsToObj } from '../../Utils'
 import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
@@ -30,11 +30,16 @@ export class BattleManager extends Component {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
     EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
+    EventManager.Instance.on(EVENT_ENUM.RECORD_STEP, this.record, this)
+    EventManager.Instance.on(EVENT_ENUM.REVOKE_STEP, this.revoke, this)
   }
 
   onDestroy() {
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived)
     EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
-    EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
+    EventManager.Instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
+    EventManager.Instance.off(EVENT_ENUM.RECORD_STEP, this.record)
+    EventManager.Instance.off(EVENT_ENUM.REVOKE_STEP, this.revoke)
   }
 
   start() {
@@ -264,5 +269,54 @@ export class BattleManager extends Component {
     ) {
       EventManager.Instance.emit(EVENT_ENUM.NEXT_LEVEL)
     }
+  }
+
+  /**
+   * 记录函数
+   */
+  record() {
+    const item: IRecord = {
+      // 玩家
+      player: pickPropsToObj(DataManager.Instance.player, ['x', 'y', 'direction', 'state', 'type']),
+      // 敌人
+      enemies: DataManager.Instance.enemies.map(enemy =>
+        pickPropsToObj(enemy, ['x', 'y', 'direction', 'state', 'type']),
+      ),
+      // 门
+      door: pickPropsToObj(DataManager.Instance.door, ['x', 'y', 'direction', 'state', 'type']),
+      // 地裂
+      bursts: DataManager.Instance.bursts.map(burst => pickPropsToObj(burst, ['x', 'y', 'direction', 'state', 'type'])),
+      // 尖刺
+      spikes: DataManager.Instance.spikes.map(spike => pickPropsToObj(spike, ['x', 'y', 'type', 'count'])),
+    }
+    DataManager.Instance.records.push(item)
+  }
+
+  revoke() {
+    const record = DataManager.Instance.records.pop()
+    if (!record) return
+    // 玩家
+    record.player && assignProps(DataManager.Instance.player, record.player, ['x', 'y', 'direction'])
+    DataManager.Instance.player.targetX = record.player.x
+    DataManager.Instance.player.targetY = record.player.y
+    // 因为其他状态会结束后会变回 Idle 状态
+    DataManager.Instance.player.state =
+      record.player.state === ENTITY_STATE_ENUM.DEATH || record.player.state === ENTITY_STATE_ENUM.AIRDEATH
+        ? record.player.state
+        : ENTITY_STATE_ENUM.IDLE
+    // 敌人
+    record.enemies?.forEach((enemy, index) => {
+      assignProps(DataManager.Instance.enemies[index], enemy, ['x', 'y', 'state', 'direction'])
+    })
+    // 门
+    record.door && assignProps(DataManager.Instance.door, record.door, ['x', 'y', 'state', 'direction'])
+    // 地裂
+    record.bursts?.forEach((burst, index) => {
+      assignProps(DataManager.Instance.bursts[index], burst, ['x', 'y', 'state', 'direction'])
+    })
+    // 尖刺
+    record.spikes?.forEach((spike, index) => {
+      assignProps(DataManager.Instance.spikes[index], spike, ['x', 'y', 'count'])
+    })
   }
 }

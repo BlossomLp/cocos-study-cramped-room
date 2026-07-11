@@ -1,5 +1,5 @@
 import { Event } from 'cc'
-import { CONTROLLER_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '../Enum'
+import { CONTROLLER_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../Enum'
 
 export interface EventMap {
   // 用户操作
@@ -36,6 +36,10 @@ export interface EventMap {
     /** 角色坐标 Y */
     playerY?: number,
     /** 移动方向 */
-    inputDirection?: CONTROLLER_ENUM,
+    direction?: CONTROLLER_ENUM,
+  ]
+  [EVENT_ENUM.SCREEN_SHAKE]: [
+    /** 振动方向 */
+    direction?: SHAKE_TYPE_ENUM,
   ]
 }

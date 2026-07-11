@@ -72,6 +72,8 @@ export class SpikesManager extends Component {
     this.y = y
     this.totalCount = SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM[type]
     this.count = count
+    // 初始化完成再绑定 - 防止人物操作时加载不到资源
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onLoopCount, this)
   }
 
   /**
@@ -81,10 +83,6 @@ export class SpikesManager extends Component {
   protected update() {
     // 人物是瓦片4倍 需要做偏移
     this.node.setPosition(this.x * TILE_WIDTH - 1.5 * TILE_WIDTH, -this.y * TILE_HEIGHT + 1.5 * TILE_WIDTH)
-  }
-
-  onLoad() {
-    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onLoopCount, this)
   }
 
   onDestroy() {

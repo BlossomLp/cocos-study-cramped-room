@@ -1,10 +1,16 @@
 import { _decorator } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
-import { BLOCK_DIRECTIONS, CTRL_MOVE_POSITIONS, TURN_CHECK_POSITIONS, TURN_DIRECTIONS } from './config'
+import {
+  BLOCK_DIRECTIONS,
+  CONTROLLER_TO_SHAKE_TYPE_ENUM_MAP,
+  CTRL_MOVE_POSITIONS,
+  TURN_CHECK_POSITIONS,
+  TURN_DIRECTIONS,
+} from './config'
 import { PlayerStateMachine } from './PlayerStateMachine'
 const { ccclass, property } = _decorator
 
@@ -23,11 +29,6 @@ export class PlayerManager extends EntityManager {
   /** 角色正在移动 */
   private isMoving: boolean = false
 
-  onLoad() {
-    EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
-    EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
-  }
-
   onDestroy() {
     super.onDestroy()
     EventManager.Instance.off(EVENT_ENUM.PLAYER_CTRL, this.inputHandle)
@@ -40,6 +41,9 @@ export class PlayerManager extends EntityManager {
     this.targetX = params.x
     this.targetY = params.y
     super.init(params)
+
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
+    EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
   }
 
   /**
@@ -102,7 +106,14 @@ export class PlayerManager extends EntityManager {
     }
 
     // 撞墙
-    if (this.willBlock(inputDirection)) return
+    if (this.willBlock(inputDirection)) {
+      // 触发振动
+      EventManager.Instance.emit(
+        EVENT_ENUM.SCREEN_SHAKE,
+        CONTROLLER_TO_SHAKE_TYPE_ENUM_MAP[inputDirection][this.direction],
+      )
+      return
+    }
     this.move(inputDirection)
   }
 
@@ -148,7 +159,7 @@ export class PlayerManager extends EntityManager {
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
-    console.log('开始碰撞检测 -> ', x, y)
+    console.log('开始碰撞检测 -> ', x, y, `direction:`, direction, `inputDirection:`, inputDirection)
 
     // ----- 移动 -----
     if (
@@ -163,7 +174,11 @@ export class PlayerManager extends EntityManager {
       x += moveX
       y += moveY
       // 判断人物是否走到 【地图边界】
-      if (x < 0 || y < 0 || x >= tileMapInfo.length || y >= tileMapInfo[0].length) return false
+      if (x < 0 || y < 0 || x >= tileMapInfo.length || y >= tileMapInfo[0].length) {
+        // 撞墙状态（动画）
+        this.state = BLOCK_DIRECTIONS[direction][inputDirection]
+        return true
+      }
       let weaponX = x
       let weaponY = y
       // 根据人物朝向 计算 【枪头目标位置】
@@ -276,5 +291,9 @@ export class PlayerManager extends EntityManager {
     }
 
     return ''
+  }
+
+  onAttackShake(direction: SHAKE_TYPE_ENUM) {
+    EventManager.Instance.emit(EVENT_ENUM.SCREEN_SHAKE, direction)
   }
 }

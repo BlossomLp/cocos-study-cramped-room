@@ -9,6 +9,7 @@ import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { ShakeManager } from '../Shake/ShakeManager'
 import { SmokeManager } from '../Smoke/SmokeManager'
 import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
@@ -93,6 +94,7 @@ export class BattleManager extends Component {
   generateStage() {
     this.stage = createUINode()
     this.stage.setParent(this.node)
+    this.stage.addComponent(ShakeManager)
   }
 
   /**
@@ -238,7 +240,8 @@ export class BattleManager extends Component {
     const { mapRowCount, mapColumnCount } = DataManager.Instance
     const disX = (mapRowCount * TILE_WIDTH) / 2
     const disY = (mapColumnCount * TILE_HEIGHT) / 2 + 80
-
+    // 防止振动导致计算错误
+    this.stage.getComponent(ShakeManager).stop()
     this.stage.setPosition(-disX, disY)
   }
 

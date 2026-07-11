@@ -22,6 +22,8 @@ export default class State {
     private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
     /** 动画速度 */
     private speed: number = ANIMATION_SPEED,
+    /** 动画帧事件 */
+    private events: Array<AnimationClip.IEvent> = [],
   ) {
     this.init()
   }
@@ -50,6 +52,7 @@ export default class State {
 
     this.animationClip.duration = frames.length * this.speed // 整个动画剪辑的周期
     this.animationClip.wrapMode = this.wrapMode // 循环播放
+    this.animationClip.events = this.events // 动画帧事件
   }
 
   run() {

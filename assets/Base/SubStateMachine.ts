@@ -14,6 +14,7 @@ export abstract class SubStateMachine {
 
   set currentState(state: State) {
     if (!state) {
+      // TODO: 错误调试
       debugger
       return
     }

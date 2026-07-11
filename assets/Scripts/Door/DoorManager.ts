@@ -13,11 +13,6 @@ const { ccclass, property } = _decorator
  */
 @ccclass('DoorManager')
 export class DoorManager extends EntityManager {
-  /** 坐标 x */
-  x: number = 0
-  /** 坐标 y */
-  y: number = 0
-
   async init(params: IEntity) {
     this.fsm = this.addComponent(DoorStateMachine)
     await this.fsm.init()

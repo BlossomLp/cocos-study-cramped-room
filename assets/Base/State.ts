@@ -3,7 +3,7 @@ import ResourceManager from '../RunTIme/ResourceManager'
 import { sortSpriteFrames } from '../Utils'
 import { StateMachine } from './StateMachine'
 
-const ANIMATION_SPEED = 1 / 8
+export const ANIMATION_SPEED = 1 / 8
 
 /****
  * 角色状态
@@ -20,6 +20,8 @@ export default class State {
     private path: string,
     /** 循环模式 */
     private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
+    /** 动画速度 */
+    private speed: number = ANIMATION_SPEED,
   ) {
     this.init()
   }
@@ -36,7 +38,7 @@ export default class State {
     track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame')
 
     const frames: Array<[number, SpriteFrame]> = sortSpriteFrames(spriteFrames).map(
-      (item: SpriteFrame, index: number) => [ANIMATION_SPEED * index, item],
+      (item: SpriteFrame, index: number) => [this.speed * index, item],
     )
 
     track.channel.curve.assignSorted(frames)
@@ -46,7 +48,7 @@ export default class State {
 
     this.animationClip.name = this.path // 动画剪辑的名称
 
-    this.animationClip.duration = frames.length * ANIMATION_SPEED // 整个动画剪辑的周期
+    this.animationClip.duration = frames.length * this.speed // 整个动画剪辑的周期
     this.animationClip.wrapMode = this.wrapMode // 循环播放
   }
 

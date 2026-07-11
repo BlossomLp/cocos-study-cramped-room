@@ -8,6 +8,7 @@ import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { SmokeManager } from '../Smoke/SmokeManager'
 import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { TileMapManager } from '../Tile/TileMapManager'
@@ -17,17 +18,21 @@ const { ccclass, property } = _decorator
 @ccclass('BattleManager')
 export class BattleManager extends Component {
   /** 地图等级 */
-  level: ILevel
+  private level: ILevel
   /** 舞台 */
-  stage: Node
+  private stage: Node = null
+  /** 烟雾层 */
+  private smokeLayer: Node = null
 
   onLoad() {
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
+    EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
   }
 
   onDestroy() {
     EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
+    EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
   }
 
   start() {
@@ -61,6 +66,8 @@ export class BattleManager extends Component {
       this.generateBursts()
 
       this.generateSpikes()
+
+      this.generateSmokeLayer()
 
       this.generatePlayer()
     }
@@ -191,6 +198,42 @@ export class BattleManager extends Component {
   }
 
   /**
+   * * 生成烟雾层
+   * 提前生成 防止出现后生成遮盖人物
+   */
+  generateSmokeLayer() {
+    this.smokeLayer = createUINode()
+    this.smokeLayer.setParent(this.stage)
+  }
+  /**
+   * * 生成烟雾
+   */
+  async generateSmoke(x, y, direction) {
+    // 加入缓存池 循环利用烟雾实例
+    const deadSmoke = DataManager.Instance.smokes.find(smoke => smoke.state === ENTITY_STATE_ENUM.DEATH)
+    if (deadSmoke) {
+      deadSmoke.x = x
+      deadSmoke.y = y
+      deadSmoke.direction = direction
+      deadSmoke.state = ENTITY_STATE_ENUM.IDLE
+      deadSmoke.updatePosition()
+    } else {
+      const smokeNode: Node = createUINode()
+      smokeNode.setParent(this.smokeLayer)
+      const smokeManager = smokeNode.addComponent(SmokeManager)
+      await smokeManager.init({
+        type: ENTITY_TYPE_ENUM.SMOKE,
+        x,
+        y,
+        state: ENTITY_STATE_ENUM.IDLE,
+        direction,
+      })
+      DataManager.Instance.smokes.push(smokeManager)
+    }
+    // console.log(`【生成烟雾】当前烟雾列表 --->`, DataManager.Instance.smokes)
+  }
+
+  /**
    * * 适配位置
    */
   adaptPosition() {
@@ -205,17 +248,19 @@ export class BattleManager extends Component {
    * * 检查玩家是否过关
    */
   checkArrived() {
-    const {
-      player: { x: playerX, y: playerY, state: playerState },
-      door: { x: doorX, y: doorY, state: doorState },
-    } = DataManager.Instance
+    const player = DataManager.Instance.player
+    const door = DataManager.Instance.door
+    if (!player || !door) return
+
+    const { x: playerX, y: playerY, state: playerState } = player
+    const { x: doorX, y: doorY, state: doorState } = door
+
     if (
       playerState !== ENTITY_STATE_ENUM.DEATH &&
       doorState === ENTITY_STATE_ENUM.DEATH &&
       playerX === doorX &&
       playerY === doorY
     ) {
-      // this.nextLevel()
       EventManager.Instance.emit(EVENT_ENUM.NEXT_LEVEL)
     }
   }

@@ -97,7 +97,7 @@ export class PlayerManager extends EntityManager {
       console.log('攻击')
       this.state = ENTITY_STATE_ENUM.ATTACK
       EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemyId)
-      EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
+      // EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN) // 试着换到动画结束时再触发
       return
     }
 
@@ -130,7 +130,12 @@ export class PlayerManager extends EntityManager {
       const [moveX, moveY] = CTRL_MOVE_POSITIONS[inputDirection]
       this.targetX += moveX
       this.targetY += moveY
+      this.showSmoke(inputDirection) // 移动时显示烟雾
     }
+  }
+
+  showSmoke(inputDirection: CONTROLLER_ENUM) {
+    EventManager.Instance.emit(EVENT_ENUM.SHOW_SMOKE, this.x, this.y, inputDirection)
   }
 
   willBlock(inputDirection: CONTROLLER_ENUM) {

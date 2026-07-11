@@ -30,4 +30,12 @@ export interface EventMap {
     /** 是否为初始化 */
     isInit?: boolean,
   ]
+  [EVENT_ENUM.SHOW_SMOKE]: [
+    /** 角色坐标 X */
+    playerX?: number,
+    /** 角色坐标 Y */
+    playerY?: number,
+    /** 移动方向 */
+    inputDirection?: CONTROLLER_ENUM,
+  ]
 }

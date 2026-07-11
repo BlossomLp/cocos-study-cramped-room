@@ -1,16 +1,15 @@
 import { _decorator, Animation } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../../Base/StateMachine'
-import { ENTITY_STATE_ENUM, EVENT_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
-import { EventManager } from '../../RunTIme/EventManager'
+import { ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import { INIT_FSM_LIST } from './config'
 const { ccclass, property } = _decorator
 
 /****
- * * 有限状态机
+ * * 有限状态机 - 烟雾
  */
-@ccclass('PlayerStateMachine')
-export class PlayerStateMachine extends StateMachine {
+@ccclass('SmokeStateMachine')
+export class SmokeStateMachine extends StateMachine {
   private readonly transitions = INIT_FSM_LIST.map(({ param }) => ({
     state: param,
     check: () => this.params.get(param).value,
@@ -37,27 +36,22 @@ export class PlayerStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
   }
 
-  /** 注册玩家状态机 */
+  /** 注册状态机 */
   initStateMachines() {
     INIT_FSM_LIST.forEach(({ param, cls }) => {
       this.stateMachines.set(param, new cls(this))
     })
-    console.log(`【注册玩家状态机】注册完成`, this.stateMachines)
+    console.log(`【注册烟雾状态机】注册完成`, this.stateMachines)
   }
 
   initAnimationEvent() {
     this.animationComponent.on(Animation.EventType.FINISHED, () => {
       const name = this.animationComponent.defaultClip.name
-      console.log('Animation.EventType.FINISHED', name)
       // 白名单: 这些动作完成后恢复到 idle 状态
-      const whiteList = ['turn', 'block', 'attack']
+      const whiteList = ['idle']
       if (whiteList.some(item => name.includes(item))) {
         // this.setParams(PARAMS_NAME_ENUM.IDLE, true)
-        this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.IDLE
-      }
-
-      if (name.includes('attack')) {
-        EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
+        this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.DEATH
       }
     })
   }

@@ -87,12 +87,16 @@ export class EntityManager extends Component {
     this.direction = direction
   }
   onDestroy() {}
+
+  updatePosition() {
+    // 人物是瓦片4倍 需要做偏移
+    this.node.setPosition(this.x * TILE_WIDTH - 1.5 * TILE_WIDTH, -this.y * TILE_HEIGHT + 1.5 * TILE_WIDTH)
+  }
   /**
    * 更新角色位置的方法
    * 该方法负责更新角色在游戏场景中的位置，通过计算瓦片坐标转换为屏幕坐标
    */
   protected update() {
-    // 人物是瓦片4倍 需要做偏移
-    this.node.setPosition(this.x * TILE_WIDTH - 1.5 * TILE_WIDTH, -this.y * TILE_HEIGHT + 1.5 * TILE_WIDTH)
+    this.updatePosition()
   }
 }

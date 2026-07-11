@@ -1,4 +1,5 @@
 import { _decorator, Component, Node } from 'cc'
+import FaderManager from '../../Base/FaderManager'
 import { ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import Levels, { ILevel } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
@@ -43,7 +44,7 @@ export class BattleManager extends Component {
   /**
    * * 初始化关卡
    */
-  initLevel() {
+  async initLevel() {
     const level: ILevel = Levels[`level${DataManager.Instance.levelIndex}`]
 
     console.log('当前关卡', DataManager.Instance.levelIndex, level)
@@ -56,20 +57,17 @@ export class BattleManager extends Component {
       DataManager.Instance.mapInfo = this.level.mapInfo
       DataManager.Instance.mapRowCount = this.level.mapInfo.length
       DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length
-
-      this.generateTileMap()
-
-      this.generateEnemies()
-
-      this.generateDoor()
-
-      this.generateBursts()
-
-      this.generateSpikes()
-
-      this.generateSmokeLayer()
-
-      this.generatePlayer()
+      FaderManager.Instance.fader.fadeIn()
+      await Promise.all([
+        this.generateTileMap(),
+        this.generateEnemies(),
+        this.generateDoor(),
+        this.generateBursts(),
+        this.generateSpikes(),
+        this.generateSmokeLayer(),
+        this.generatePlayer(),
+      ])
+      FaderManager.Instance.fader.fadeOut()
     }
   }
 

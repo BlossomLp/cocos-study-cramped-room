@@ -3,7 +3,7 @@ import { DIRECTION_ENUM, SHAKE_TYPE_ENUM, SPIKES_COUNT_ENUM } from '../Enum'
 export interface IDirectionsConf {
   path: string
   direction: DIRECTION_ENUM
-  shakeType: SHAKE_TYPE_ENUM
+  shakeType?: SHAKE_TYPE_ENUM
 }
 /** 方向资源路径映射 */
 export const DIRECTIONS_LIST: IDirectionsConf[] = [

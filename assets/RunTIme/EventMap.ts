@@ -44,4 +44,7 @@ export interface EventMap {
   ]
   [EVENT_ENUM.RECORD_STEP]: []
   [EVENT_ENUM.REVOKE_STEP]: []
+  [EVENT_ENUM.GAME_START]: []
+  [EVENT_ENUM.RESTART_LEVEL]: []
+  [EVENT_ENUM.QUIT_BATTLE]: []
 }

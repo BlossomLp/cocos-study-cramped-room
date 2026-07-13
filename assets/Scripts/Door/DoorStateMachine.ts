@@ -9,18 +9,20 @@ const { ccclass, property } = _decorator
  */
 @ccclass('DoorStateMachine')
 export class DoorStateMachine extends StateMachine {
-  private readonly transitons = INIT_FSM_LIST.map(({ param }) => ({
+  private readonly transitions = INIT_FSM_LIST.map(({ param }) => ({
     state: param,
     check: () => this.params.get(param).value,
   }))
   async init() {
-    this.animationComponent = this.addComponent(Animation)
+    this.animationComponent = this.node.addComponent(Animation)
 
     this.initParams()
     this.initStateMachines()
+    this.initAnimationEvent()
 
     await Promise.all(this.waitingList)
   }
+  initAnimationEvent() {}
 
   /**
    * 初始化参数
@@ -43,7 +45,7 @@ export class DoorStateMachine extends StateMachine {
   }
 
   run() {
-    const next = this.transitons.find(({ check }) => check())
+    const next = this.transitions.find(({ check }) => check())
     if (next) {
       this.currentState = this.stateMachines.get(next.state)
     } else {

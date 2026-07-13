@@ -1,6 +1,6 @@
-import { _decorator, Component, Node } from 'cc'
+import { _decorator, Component, director, Node } from 'cc'
 import FaderManager from '../../Base/FaderManager'
-import { ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import { ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, SCENE_ENUM } from '../../Enum'
 import Levels, { ILevel } from '../../Levels'
 import { DataManager, IRecord } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
@@ -19,6 +19,8 @@ const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
 export class BattleManager extends Component {
+  /** 是否已完成加载 */
+  private isInitialed: boolean = false
   /** 地图等级 */
   private level: ILevel
   /** 舞台 */
@@ -32,6 +34,8 @@ export class BattleManager extends Component {
     EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
     EventManager.Instance.on(EVENT_ENUM.RECORD_STEP, this.record, this)
     EventManager.Instance.on(EVENT_ENUM.REVOKE_STEP, this.revoke, this)
+    EventManager.Instance.on(EVENT_ENUM.RESTART_LEVEL, this.initLevel, this)
+    EventManager.Instance.on(EVENT_ENUM.QUIT_BATTLE, this.quitBattle, this)
   }
 
   onDestroy() {
@@ -40,6 +44,8 @@ export class BattleManager extends Component {
     EventManager.Instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
     EventManager.Instance.off(EVENT_ENUM.RECORD_STEP, this.record)
     EventManager.Instance.off(EVENT_ENUM.REVOKE_STEP, this.revoke)
+    EventManager.Instance.off(EVENT_ENUM.RESTART_LEVEL, this.initLevel)
+    EventManager.Instance.off(EVENT_ENUM.QUIT_BATTLE, this.quitBattle)
   }
 
   start() {
@@ -56,6 +62,12 @@ export class BattleManager extends Component {
     console.log('当前关卡', DataManager.Instance.levelIndex, level)
 
     if (level) {
+      if (!this.isInitialed) {
+        // 初次加载需要持续保持黑屏（和切换场景衔接）
+        FaderManager.Instance.fader.mask()
+      } else {
+        FaderManager.Instance.fader.fadeIn()
+      }
       this.clearLevel()
 
       this.level = level
@@ -63,7 +75,6 @@ export class BattleManager extends Component {
       DataManager.Instance.mapInfo = this.level.mapInfo
       DataManager.Instance.mapRowCount = this.level.mapInfo.length
       DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length
-      FaderManager.Instance.fader.fadeIn()
       await Promise.all([
         this.generateTileMap(),
         this.generateEnemies(),
@@ -74,6 +85,9 @@ export class BattleManager extends Component {
         this.generatePlayer(),
       ])
       FaderManager.Instance.fader.fadeOut()
+      this.isInitialed = true
+    } else {
+      this.quitBattle()
     }
   }
 
@@ -177,7 +191,7 @@ export class BattleManager extends Component {
       const burstManager = burstNode.addComponent(BurstManager)
 
       const burst = this.level.bursts[i]
-      promises.push(burstManager.init(this.level.bursts[i]))
+      promises.push(burstManager.init(burst))
       DataManager.Instance.bursts.push(burstManager)
     }
 
@@ -318,5 +332,10 @@ export class BattleManager extends Component {
     record.spikes?.forEach((spike, index) => {
       assignProps(DataManager.Instance.spikes[index], spike, ['x', 'y', 'count'])
     })
+  }
+
+  quitBattle() {
+    this.node.destroy()
+    director.loadScene(SCENE_ENUM.Start)
   }
 }

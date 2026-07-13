@@ -8,4 +8,12 @@ export class MenuManager extends Component {
   handleRevoke() {
     EventManager.Instance.emit(EVENT_ENUM.REVOKE_STEP)
   }
+
+  handleRestart() {
+    EventManager.Instance.emit(EVENT_ENUM.RESTART_LEVEL)
+  }
+
+  handleOutScene() {
+    EventManager.Instance.emit(EVENT_ENUM.QUIT_BATTLE)
+  }
 }

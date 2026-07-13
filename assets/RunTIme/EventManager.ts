@@ -40,4 +40,8 @@ export class EventManager extends Singleton {
       }
     }
   }
+
+  clear() {
+    this.eventDic.clear()
+  }
 }

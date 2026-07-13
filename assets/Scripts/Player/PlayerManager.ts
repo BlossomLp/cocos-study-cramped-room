@@ -98,7 +98,6 @@ export class PlayerManager extends EntityManager {
     // 检查是否可以攻击
     const enemyId = this.willAttack(inputDirection)
     if (enemyId) {
-      console.log('攻击')
       EventManager.Instance.emit(EVENT_ENUM.RECORD_STEP)
       this.state = ENTITY_STATE_ENUM.ATTACK
       EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, enemyId)
@@ -163,7 +162,6 @@ export class PlayerManager extends EntityManager {
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
-    console.log('开始碰撞检测 -> ', x, y, `direction:`, direction, `inputDirection:`, inputDirection)
 
     // ----- 移动 -----
     if (
@@ -221,8 +219,6 @@ export class PlayerManager extends EntityManager {
 
       const pos1 = { x: x + dx1, y: y + dy1 }
       const pos2 = { x: x + dx2, y: y + dy2 }
-
-      console.log(`转向碰撞检测[${inputDirection}] -> `, pos1, pos2)
 
       const tile1 = tileMapInfo[pos1.x][pos1.y]
       const tile2 = tileMapInfo[pos2.x][pos2.y]

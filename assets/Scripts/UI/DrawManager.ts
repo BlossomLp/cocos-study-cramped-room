@@ -52,7 +52,6 @@ export class DrawManager extends Component {
           },
         )
         .call(() => {
-          console.log('fade in done')
           resolve()
         })
         .start()

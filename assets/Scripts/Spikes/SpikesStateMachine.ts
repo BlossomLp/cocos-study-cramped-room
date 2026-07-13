@@ -41,7 +41,6 @@ export class SpikesStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, cls }) => {
       this.stateMachines.set(param, new cls(this))
     })
-    console.log(`【注册尖刺状态机】注册完成`, this.stateMachines)
   }
 
   initAnimationEvent() {
@@ -60,7 +59,6 @@ export class SpikesStateMachine extends StateMachine {
   run() {
     const next = this.transitons.find(({ check }) => check())
     if (next) {
-      console.log(`【尖刺】next`, next, this.stateMachines)
       this.currentState = this.stateMachines.get(next.state)
     } else {
       this.currentState = this.currentState

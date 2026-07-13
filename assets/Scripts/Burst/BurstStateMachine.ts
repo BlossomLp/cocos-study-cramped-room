@@ -42,7 +42,6 @@ export class BurstStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, path }) => {
       this.stateMachines.set(param, new State(this, `${BASE_PATH}/${path}`))
     })
-    console.log(`【注册地裂状态机】注册完成`, this.stateMachines)
   }
 
   run() {

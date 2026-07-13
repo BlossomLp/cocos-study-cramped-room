@@ -68,7 +68,6 @@ export class EntityManager extends Component {
   }
 
   init(params: IEntity) {
-    console.log('EntityManager init', params)
     const sprite = this.node.addComponent(Sprite)
     sprite.sizeMode = Sprite.SizeMode.CUSTOM
 

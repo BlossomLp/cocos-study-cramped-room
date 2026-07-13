@@ -42,13 +42,11 @@ export class PlayerStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, cls }) => {
       this.stateMachines.set(param, new cls(this))
     })
-    console.log(`【注册玩家状态机】注册完成`, this.stateMachines)
   }
 
   initAnimationEvent() {
     this.animationComponent.on(Animation.EventType.FINISHED, () => {
       const name = this.animationComponent.defaultClip.name
-      console.log('Animation.EventType.FINISHED', name)
       // 白名单: 这些动作完成后恢复到 idle 状态
       const whiteList = ['turn', 'block', 'attack']
       if (whiteList.some(item => name.includes(item))) {

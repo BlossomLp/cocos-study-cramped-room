@@ -3,9 +3,10 @@ import FaderManager from '../../Base/FaderManager'
 import { SCENE_ENUM } from '../../Enum'
 const { ccclass, property } = _decorator
 
-@ccclass('ControllerManager')
-export class ControllerManager extends Component {
+@ccclass('StartManager')
+export class StartManager extends Component {
   async onLoad() {
+    director.preloadScene(SCENE_ENUM.Battle)
     await FaderManager.Instance.fader.fadeOut(1000)
     // EventManager.Instance.emit(EVENT_ENUM.GAME_START)
     this.node.once(Node.EventType.TOUCH_END, this.handleStart, this)

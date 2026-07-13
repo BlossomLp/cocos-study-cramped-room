@@ -63,7 +63,6 @@ export class EnemyManager extends EntityManager {
   }
 
   onDead(id: string) {
-    console.log('【怪物死亡】onDead', id)
     if (id === this.id && this.state !== ENTITY_STATE_ENUM.DEATH) {
       this.state = ENTITY_STATE_ENUM.DEATH
     }

@@ -56,7 +56,6 @@ export class SpikesManager extends Component {
   }
 
   async init(params: ISpikes) {
-    console.log('SpikesManager init', params)
     const sprite = this.node.addComponent(Sprite)
     sprite.sizeMode = Sprite.SizeMode.CUSTOM
     const transform = this.getComponent(UITransform)

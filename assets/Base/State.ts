@@ -56,7 +56,6 @@ export default class State {
   }
 
   run() {
-    console.log('run', this.path)
     // 防止播放重复动画抖动
     if (this.fsm.animationComponent?.defaultClip?.name === this.animationClip.name) return
     this.fsm.animationComponent.defaultClip = this.animationClip

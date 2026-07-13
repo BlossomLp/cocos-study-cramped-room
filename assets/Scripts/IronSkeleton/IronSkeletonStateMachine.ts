@@ -39,7 +39,6 @@ export class IronSkeletonStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, cls }) => {
       this.stateMachines.set(param, new cls(this))
     })
-    console.log(`【注册木骷髅状态机】注册完成`, this.stateMachines)
   }
 
   run() {

@@ -29,6 +29,8 @@ export class BattleManager extends Component {
   private smokeLayer: Node = null
 
   onLoad() {
+    director.preloadScene(SCENE_ENUM.Start)
+    DataManager.Instance.levelIndex = 1
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
     EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
@@ -46,6 +48,8 @@ export class BattleManager extends Component {
     EventManager.Instance.off(EVENT_ENUM.REVOKE_STEP, this.revoke)
     EventManager.Instance.off(EVENT_ENUM.RESTART_LEVEL, this.initLevel)
     EventManager.Instance.off(EVENT_ENUM.QUIT_BATTLE, this.quitBattle)
+
+    EventManager.Instance.clear()
   }
 
   start() {
@@ -58,8 +62,6 @@ export class BattleManager extends Component {
    */
   async initLevel() {
     const level: ILevel = Levels[`level${DataManager.Instance.levelIndex}`]
-
-    console.log('当前关卡', DataManager.Instance.levelIndex, level)
 
     if (level) {
       if (!this.isInitialed) {
@@ -82,9 +84,9 @@ export class BattleManager extends Component {
         this.generateBursts(),
         this.generateSpikes(),
         this.generateSmokeLayer(),
-        this.generatePlayer(),
       ])
-      FaderManager.Instance.fader.fadeOut()
+      await this.generatePlayer()
+      await FaderManager.Instance.fader.fadeOut()
       this.isInitialed = true
     } else {
       this.quitBattle()

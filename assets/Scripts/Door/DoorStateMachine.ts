@@ -41,7 +41,6 @@ export class DoorStateMachine extends StateMachine {
     INIT_FSM_LIST.forEach(({ param, cls }) => {
       this.stateMachines.set(param, new cls(this))
     })
-    console.log(`【注册门状态机】注册完成`, this.stateMachines)
   }
 
   run() {

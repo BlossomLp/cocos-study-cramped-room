@@ -8,6 +8,8 @@ import {
   PARAMS_NAME_ENUM,
   SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
 } from '../../Enum'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import { ISpikes } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
@@ -99,6 +101,7 @@ export class SpikesManager extends Component {
       this.count = targetCount
     }
     this.checkAttack()
+    AudioManager.Instance.playSFX(AUDIO_CLIP_ENUM.SFX_SPIKES_TICK)
   }
 
   checkAttack() {

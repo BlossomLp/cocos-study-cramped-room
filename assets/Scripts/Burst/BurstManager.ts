@@ -4,6 +4,8 @@ import { ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TIleManager'
 import { BurstStateMachine } from './BurstStateMachine'
 const { ccclass, property } = _decorator
@@ -43,6 +45,7 @@ export class BurstManager extends EntityManager {
     if (isCollision && this.state === ENTITY_STATE_ENUM.IDLE) {
       // 刚踩到 -> 攻击
       this.state = ENTITY_STATE_ENUM.ATTACK
+      AudioManager.Instance.playSFX(AUDIO_CLIP_ENUM.SFX_BURST)
     } else if (this.state === ENTITY_STATE_ENUM.ATTACK) {
       // 如果已经是攻击状态 则 -> 死亡
       this.state = ENTITY_STATE_ENUM.DEATH

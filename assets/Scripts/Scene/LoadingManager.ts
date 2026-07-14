@@ -1,5 +1,6 @@
 import { _decorator, Component, director, ProgressBar, resources } from 'cc'
 import { SCENE_ENUM } from '../../Enum'
+import { AudioManager } from '../Audio/AudioManager'
 const { ccclass, property } = _decorator
 
 @ccclass('LoadingManager')
@@ -27,6 +28,7 @@ export class LoadingManager extends Component {
           return
         }
 
+        await AudioManager.Instance.init()
         director.loadScene(SCENE_ENUM.Start)
       },
     )

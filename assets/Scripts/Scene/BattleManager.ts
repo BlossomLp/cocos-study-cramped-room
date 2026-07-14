@@ -5,6 +5,8 @@ import Levels, { ILevel } from '../../Levels'
 import { DataManager, IRecord } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
 import { assignProps, createUINode, pickPropsToObj } from '../../Utils'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
@@ -29,8 +31,10 @@ export class BattleManager extends Component {
   private smokeLayer: Node = null
 
   onLoad() {
+    AudioManager.Instance.init()
     director.preloadScene(SCENE_ENUM.Start)
     DataManager.Instance.levelIndex = 1
+
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
     EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
@@ -55,6 +59,7 @@ export class BattleManager extends Component {
   start() {
     this.generateStage()
     this.initLevel()
+    AudioManager.Instance.playBGM(AUDIO_CLIP_ENUM.BGM_BATTLE)
   }
 
   /**
@@ -337,6 +342,7 @@ export class BattleManager extends Component {
   }
 
   quitBattle() {
+    AudioManager.Instance.stopBGM()
     this.node.destroy()
     director.loadScene(SCENE_ENUM.Start)
   }

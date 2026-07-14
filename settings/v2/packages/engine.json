@@ -6,7 +6,6 @@
     },
     "configs": {
       "migrationsConfig": {
-        "name": "迁移生成的配置",
         "cache": {
           "base": {
             "_value": true
@@ -122,7 +121,7 @@
             "_value": false
           },
           "audio": {
-            "_value": false
+            "_value": true
           },
           "video": {
             "_value": false
@@ -194,10 +193,12 @@
           }
         },
         "flags": {},
+        "name": "迁移生成的配置",
         "includeModules": [
           "2d",
           "affine-transform",
           "animation",
+          "audio",
           "base",
           "gfx-webgl",
           "gfx-webgl2",

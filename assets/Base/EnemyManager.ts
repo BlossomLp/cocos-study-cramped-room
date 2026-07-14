@@ -65,6 +65,7 @@ export class EnemyManager extends EntityManager {
   onDead(id: string) {
     if (id === this.id && this.state !== ENTITY_STATE_ENUM.DEATH) {
       this.state = ENTITY_STATE_ENUM.DEATH
+      EventManager.Instance.emit(EVENT_ENUM.ENEMY_DEATH, this.id, this.type)
     }
   }
 }

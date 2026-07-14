@@ -1,5 +1,5 @@
 import { Event } from 'cc'
-import { CONTROLLER_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../Enum'
+import { CONTROLLER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../Enum'
 
 export interface EventMap {
   // 用户操作
@@ -47,4 +47,10 @@ export interface EventMap {
   [EVENT_ENUM.GAME_START]: []
   [EVENT_ENUM.RESTART_LEVEL]: []
   [EVENT_ENUM.QUIT_BATTLE]: []
+  [EVENT_ENUM.ENEMY_DEATH]: [
+    /** 死亡敌人 id */
+    id: string,
+    /** 敌人类型 */
+    type: ENTITY_TYPE_ENUM,
+  ]
 }

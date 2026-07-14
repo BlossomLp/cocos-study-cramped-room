@@ -197,8 +197,10 @@ export class PlayerManager extends EntityManager {
       const playerTile = tileMapInfo[x][y]
       // 枪头可能超出边界
       const weaponTile = tileMapInfo[weaponX]?.[weaponY]
-      // 判断枪头是否撞到 【敌人】
-      const isCollisionEnemy = enemies.some(enemy => enemy.x === weaponX && enemy.y === weaponY)
+      // 判断枪头或者人是否撞到 【敌人】
+      const isCollisionEnemy = enemies.some(
+        enemy => (enemy.x === weaponX && enemy.y === weaponY) || (enemy.x === x && enemy.y === y),
+      )
       // 判断枪头是否撞到 【门】
       const isCollisionDoor = door.state === ENTITY_STATE_ENUM.IDLE && door.x === weaponX && door.y === weaponY
       // 判断是否会走到【地裂】上（地裂：即使地图瓦片为空也可以走）

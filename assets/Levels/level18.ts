@@ -1,5 +1,5 @@
-import { TILE_TYPE_ENUM, DIRECTION_ENUM, ENTITY_TYPE_ENUM, ENTITY_STATE_ENUM } from '../Enum';
-import { IEntity, ILevel, ISpikes } from './index';
+import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, TILE_TYPE_ENUM } from '../Enum'
+import { IEntity, ILevel, ISpikes } from './index'
 
 const mapInfo = [
   [
@@ -75,8 +75,8 @@ const mapInfo = [
       type: TILE_TYPE_ENUM.FLOOR,
     },
     {
-      src: 17,
-      type: TILE_TYPE_ENUM.CLIFF_CENTER,
+      src: 1,
+      type: TILE_TYPE_ENUM.FLOOR,
     },
     {
       src: 1,
@@ -307,7 +307,7 @@ const mapInfo = [
       type: null,
     },
   ],
-];
+]
 
 const player: IEntity = {
   x: 3,
@@ -315,7 +315,7 @@ const player: IEntity = {
   direction: DIRECTION_ENUM.LEFT,
   state: ENTITY_STATE_ENUM.IDLE,
   type: ENTITY_TYPE_ENUM.PLAYER,
-};
+}
 
 const enemies: Array<IEntity> = [
   {
@@ -332,37 +332,36 @@ const enemies: Array<IEntity> = [
     state: ENTITY_STATE_ENUM.IDLE,
     type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
   },
-];
+]
 
 const spikes: Array<ISpikes> = [
   {
     x: 1,
     y: 4,
     type: ENTITY_TYPE_ENUM.SPIKES_TWO,
-    count: 0,
+    count: 1,
+  },
+  {
+    x: 1,
+    y: 5,
+    type: ENTITY_TYPE_ENUM.SPIKES_TWO,
+    count: 2,
   },
   {
     x: 1,
     y: 6,
     type: ENTITY_TYPE_ENUM.SPIKES_TWO,
-    count: 0,
+    count: 1,
   },
   {
     x: 1,
     y: 8,
     type: ENTITY_TYPE_ENUM.SPIKES_FOUR,
-    count: 0,
+    count: 1,
   },
-];
+]
 
 const bursts: Array<IEntity> = [
-  {
-    x: 1,
-    y: 5,
-    state: ENTITY_STATE_ENUM.IDLE,
-    type: ENTITY_TYPE_ENUM.BURST,
-    direction: DIRECTION_ENUM.TOP,
-  },
   {
     x: 2,
     y: 9,
@@ -370,7 +369,7 @@ const bursts: Array<IEntity> = [
     type: ENTITY_TYPE_ENUM.BURST,
     direction: DIRECTION_ENUM.TOP,
   },
-];
+]
 
 const door: IEntity = {
   x: 5,
@@ -378,7 +377,7 @@ const door: IEntity = {
   direction: DIRECTION_ENUM.LEFT,
   state: ENTITY_STATE_ENUM.IDLE,
   type: ENTITY_TYPE_ENUM.DOOR,
-};
+}
 
 const level: ILevel = {
   mapInfo,
@@ -387,6 +386,6 @@ const level: ILevel = {
   spikes,
   bursts,
   door,
-};
+}
 
-export default level;
+export default level

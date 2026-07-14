@@ -60,9 +60,6 @@ export class EntityManager extends Component {
   set direction(value: DIRECTION_ENUM) {
     // 将传入的方向值赋给私有属性_direction
     this._direction = value
-    if (!this.fsm) {
-      debugger
-    }
     // 在有限状态机中设置方向参数，使用DIRECTION_ORDER_ENUM映射对应的顺序值
     this.fsm.setParams(PARAMS_NAME_ENUM.DIRECTION, DIRECTION_ORDER_ENUM[this._direction])
   }

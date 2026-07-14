@@ -4,6 +4,8 @@ import { ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import { WoodenSkeletonStateMachine } from './WoodenSkeletonStateMachine'
 const { ccclass, property } = _decorator
 
@@ -47,5 +49,9 @@ export class WoodenSkeletonManager extends EnemyManager {
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
     }
+  }
+
+  onAttackSound() {
+    AudioManager.Instance.playSFX(AUDIO_CLIP_ENUM.SFX_ATTACK)
   }
 }

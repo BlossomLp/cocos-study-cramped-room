@@ -4,6 +4,8 @@ import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM, SHAKE_T
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import {
   BLOCK_DIRECTIONS,
   CONTROLLER_TO_SHAKE_TYPE_ENUM_MAP,
@@ -162,7 +164,6 @@ export class PlayerManager extends EntityManager {
     const { direction, targetX, targetY } = this
     let x = Math.round(targetX)
     let y = Math.round(targetY)
-
     // ----- 移动 -----
     if (
       inputDirection === CONTROLLER_ENUM.TOP ||
@@ -176,7 +177,7 @@ export class PlayerManager extends EntityManager {
       x += moveX
       y += moveY
       // 判断人物是否走到 【地图边界】
-      if (x < 0 || y < 0 || x >= tileMapInfo.length || y >= tileMapInfo[0].length) {
+      if (x < 0 || y < 0 || x >= tileMapInfo.length || y >= tileMapInfo[x].length) {
         // 撞墙状态（动画）
         this.state = BLOCK_DIRECTIONS[direction][inputDirection]
         return true
@@ -203,6 +204,7 @@ export class PlayerManager extends EntityManager {
       // 判断是否会走到【地裂】上（地裂：即使地图瓦片为空也可以走）
       const isBurst = bursts.some(burst => burst.x === x && burst.y === y)
 
+      // console.log(`移动 碰撞检测 --> 人物x:${x},y:${y}`, playerTile, `枪头x:${weaponX},y:${weaponY} `, weaponTile)
       if (
         // 判断人物是否走到 【墙】
         (playerTile?.moveable || isBurst) &&
@@ -295,5 +297,10 @@ export class PlayerManager extends EntityManager {
 
   onAttackShake(direction: SHAKE_TYPE_ENUM) {
     EventManager.Instance.emit(EVENT_ENUM.SCREEN_SHAKE, direction)
+    AudioManager.Instance.playSFX(AUDIO_CLIP_ENUM.SFX_ENEMY_DEATH)
+  }
+
+  onDeathSound(audio: AUDIO_CLIP_ENUM) {
+    AudioManager.Instance.playSFX(audio)
   }
 }

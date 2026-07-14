@@ -1,6 +1,6 @@
 import { AudioClip, AudioSource, director, Node, resources } from 'cc'
 import Singleton from '../../Base/Singleton'
-import { ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
+import { EVENT_ENUM } from '../../Enum'
 import { EventManager } from '../../RunTIme/EventManager'
 import { AUDIO_CLIP_ENUM, EVENT_TO_SFX } from './AudioConfig'
 
@@ -38,7 +38,7 @@ export class AudioManager extends Singleton {
   /** BGM 音量 (0-1) */
   private _bgmVolume: number = 0.2
   /** SFX 音量 (0-1) */
-  private _sfxVolume: number = 0.5
+  private _sfxVolume: number = 0.2
 
   constructor() {
     super()
@@ -90,16 +90,7 @@ export class AudioManager extends Singleton {
     const eventNames = Object.keys(EVENT_TO_SFX) as EVENT_ENUM[]
     for (const eventName of eventNames) {
       const clipName = EVENT_TO_SFX[eventName]
-      EventManager.Instance.on(eventName, (...args: any[]) => {
-        if (eventName === EVENT_ENUM.ATTACK_PLAYER) {
-          const type = args[0] as ENTITY_STATE_ENUM
-          if (type === ENTITY_STATE_ENUM.AIRDEATH) {
-            this.playSFX(AUDIO_CLIP_ENUM.SFX_PLAYER_AIRDEATH)
-          } else {
-            this.playSFX(AUDIO_CLIP_ENUM.SFX_PLAYER_DEATH)
-          }
-          return
-        }
+      EventManager.Instance.on(eventName, () => {
         this.playSFX(clipName)
       })
     }

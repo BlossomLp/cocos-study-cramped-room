@@ -402,7 +402,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 388,
+      "y": 398,
       "z": 0
     },
     "_lrot": {
@@ -1001,7 +1001,7 @@
     "_target": null,
     "_left": 0,
     "_right": 0,
-    "_top": 42,
+    "_top": 32,
     "_bottom": 0,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
@@ -2482,7 +2482,7 @@
         "__id__": 69
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 74
@@ -2618,7 +2618,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "45828f25-b50d-4c52-a591-e19491a62b8c@f9941",
+      "__uuid__": "a9b1d918-81c5-4f91-8b27-63bb2dec98b0@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -2696,8 +2696,8 @@
       "__id__": 68
     },
     "component": "",
-    "_componentId": "9e16feBcS9LzaeOEE0E3t+9",
-    "handler": "onClickAudioSetting",
+    "_componentId": "f909brv1K5FzaLx8vywRAa+",
+    "handler": "handleSettingAudio",
     "customEventData": ""
   },
   {
@@ -2753,15 +2753,16 @@
     "_id": "01kDOxQdZMLqBoTEiY5wv5"
   },
   {
-    "__type__": "9e16feBcS9LzaeOEE0E3t+9",
+    "__type__": "f909brv1K5FzaLx8vywRAa+",
     "_name": "",
     "_objFlags": 0,
+    "__editorExtras__": {},
     "node": {
       "__id__": 68
     },
     "_enabled": true,
     "__prefab": null,
-    "_id": "b7xMiQ/dhBdpkuGkUp6eEi"
+    "_id": "17zcUE6QVB7aaWuwU8mB+H"
   },
   {
     "__type__": "cc.UITransform",

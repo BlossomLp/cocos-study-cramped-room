@@ -4,6 +4,8 @@ import { ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enum'
 import { IEntity } from '../../Levels'
 import { DataManager } from '../../RunTIme/DataManager'
 import { EventManager } from '../../RunTIme/EventManager'
+import { AUDIO_CLIP_ENUM } from '../Audio/AudioConfig'
+import { AudioManager } from '../Audio/AudioManager'
 import { DoorStateMachine } from './DoorStateMachine'
 const { ccclass, property } = _decorator
 
@@ -32,6 +34,7 @@ export class DoorManager extends EntityManager {
     const { enemies, player } = DataManager.Instance
     if (enemies.every(item => item.state === ENTITY_STATE_ENUM.DEATH) && player.state != ENTITY_STATE_ENUM.DEATH) {
       this.state = ENTITY_STATE_ENUM.DEATH
+      AudioManager.Instance.playSFX(AUDIO_CLIP_ENUM.SFX_DOOR_OPEN)
     }
   }
 }
